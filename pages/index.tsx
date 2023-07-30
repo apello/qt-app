@@ -1,10 +1,16 @@
-import SignIn from "@/components/auth/signIn";
-import SignUp from "@/components/auth/signUp";
-import AuthDetails from "@/components/auth/AuthDetails";
+import { NextPage } from "next";
+import Link from "next/link";
 
-const Home = () => {
+const Home: NextPage = (): JSX.Element => {
     return (
-        <div>Hello World</div>
+        <>
+            <h3>Hello</h3>
+            <button>
+                <Link href='auth/login'>
+                    Login
+                </Link>
+            </button>
+        </>
     );
 }
 

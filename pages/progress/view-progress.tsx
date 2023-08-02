@@ -1,22 +1,21 @@
 import { auth, db } from "@/firebase/clientApp";
 import { User, onAuthStateChanged, signOut } from "firebase/auth";
-import { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
+import { NextPage } from "next";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { memo, useEffect, useState } from "react";
-import { chapters, Log, Chapter, prettyPrintDate } from '../../common/utils';
+import { useEffect, useState } from "react";
+import { chapters, Log, prettyPrintDate } from '../../common/utils';
 import { DocumentData, collection, getDocs } from "firebase/firestore";
 import Header from "@/components/Header";
-
-
-
+import { log } from "console";
 
 const ViewProgress: NextPage = (): JSX.Element => {
     const [user, setUser] = useState<User | null>();
     const [filterText, setFilterText] = useState("");
 
     const [logs, setLogs] = useState<Array<DocumentData>>();
+    // Define these
     const [memorizationLogs, setMemorizationLogs] = useState<any>();
+    // Define these
     const [revisionLogs, setRevisionLogs] = useState<any>();
 
     useEffect(() => {
@@ -62,108 +61,93 @@ const ViewProgress: NextPage = (): JSX.Element => {
     const filteredChapters = chapters.filter(
         chapter => chapter.name.toLowerCase().indexOf(filterText.toLowerCase()) !== -1
     );
-
     
-    
-    if(user) {
-        return (
-            <>
-                <Header />
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+    if(user) { return (
+        <>
+            <Header />
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                <div style={{ padding: '20px'}}>
+                    <h5><Link href='/landing'>Home</Link>/View Progress</h5>
+                    <h1>Recent Progress</h1>
 
-                    <div style={{ padding: '20px'}}>
+                    {(memorizationLogs !== undefined && memorizationLogs!.length > 0) ? (
+                        <> 
+                            <h3>Memorization</h3>
+                            <table style={{ border: '1px solid black' }}>
+                                <thead>
+                                    <tr>
+                                        <th style={{ border: '1px solid black' }}>Chapter Name</th>
+                                        <th style={{ border: '1px solid black' }}>Amount Completed</th>
+                                        <th style={{ border: '1px solid black' }}>Log Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {memorizationLogs.map((log: Log) => (
+                                        // Get log ID for key   
+                                        <tr key={log.chapterName+log.chapterNumber+log.verseAmount+log.endVerse}>
+                                            <td style={{ border: '1px solid black' }}>{log.chapterName}</td>
+                                            <td style={{ border: '1px solid black' }}>{log.verseAmount} verses</td>
+                                            <td style={{ border: '1px solid black' }}>{prettyPrintDate(new Date(log.createdAt.seconds * 1000 + log.createdAt.nanoseconds/1000000))}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </>
+                    ) : ( <div style={{ textAlign: 'center' }}>No current progress.</div> )}  
 
-                        <h5><Link href='/landing'>Home</Link>/View Progress</h5>
-                        <h1>Recent Progress</h1>
- 
-                        {(memorizationLogs !== undefined) ? (
-                            <div>
-                                <div> 
-                                    <h3>Memorization</h3>
-                                    {(memorizationLogs!.length > 0) ? (
-                                        <table style={{ border: '1px solid black' }}>
-                                            <thead>
-                                                <tr>
-                                                    <th style={{ border: '1px solid black' }}>Chapter Name</th>
-                                                    <th style={{ border: '1px solid black' }}>Amount Completed</th>
-                                                    <th style={{ border: '1px solid black' }}>Log Date</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {memorizationLogs.map((log: Log) => (
-                                                    <tr key={log.chapterNumber}>
-                                                        <td style={{ border: '1px solid black' }}>{log.chapterName}</td>
-                                                        <td style={{ border: '1px solid black' }}>{log.verseAmount} verses</td>
-                                                        <td style={{ border: '1px solid black' }}>Date</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    ) : ( <div>No current progress.</div> )} 
-                                </div>
-                            </div>
-                        ) : ( <></> )}  
+                    {(revisionLogs !== undefined && revisionLogs!.length > 0 ) ? (
+                        <> 
+                            <h3>Revision</h3>
+                            <table style={{ border: '1px solid black' }}>
+                                <thead>
+                                    <tr>
+                                        <th style={{ border: '1px solid black' }}>Chapter Name</th>
+                                        <th style={{ border: '1px solid black' }}>Amount Completed</th>
+                                        <th style={{ border: '1px solid black' }}>Log Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {revisionLogs.map((log: Log) => (
+                                        // Get log ID for key   
+                                        <tr key={log.chapterName+log.chapterNumber+log.verseAmount+log.endVerse}>
+                                            <td style={{ border: '1px solid black' }}>{log.chapterName}</td>
+                                            <td style={{ border: '1px solid black' }}>{log.verseAmount} verses</td>
+                                            <td style={{ border: '1px solid black' }}>{prettyPrintDate(new Date(log.createdAt.seconds * 1000 + log.createdAt.nanoseconds/1000000))}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </>
+                    ) : ( <div style={{ textAlign: 'center' }}>No current progress.</div> )}  
+                </div>
 
-
-                        {(revisionLogs !== undefined) ? (
-                            <div>
-                                <div> 
-                                    <h3>Revision</h3>
-                                    {(revisionLogs!.length > 0) ? (
-                                        <table style={{ border: '1px solid black' }}>
-                                            <thead>
-                                                <tr>
-                                                    <th style={{ border: '1px solid black' }}>Chapter Name</th>
-                                                    <th style={{ border: '1px solid black' }}>Amount Completed</th>
-                                                    <th style={{ border: '1px solid black' }}>Log Date</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {revisionLogs.map((log: Log) => (
-                                                    <tr key={log.chapterNumber}>
-                                                        <td style={{ border: '1px solid black' }}>{log.chapterName}</td>
-                                                        <td style={{ border: '1px solid black' }}>{log.verseAmount} verses</td>
-                                                        <td style={{ border: '1px solid black' }}>Date</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    ) : ( <div style={{ textAlign: 'center' }}>No current progress.</div> )} 
-                                </div>
-                            </div>
-                        ) : ( <></> )}  
-                       
-                       
-            
+                <div style={{ padding: '20px'}}>
+                    <div style={{ border: '1px solid black', padding: '10px'}}>
+                        <h3>Overall Progress</h3>
+                        <h5>Quran Memorization Goal - 10% Memorized</h5>
                     </div>
 
-                    <div style={{ padding: '20px'}}>
                         <div style={{ border: '1px solid black', padding: '10px'}}>
-                            <h3>Overall Progress</h3>
-                            <h5>Quran Memorization Goal - 10% Memorized</h5>
-                        </div>
+                        <input 
+                            type='text' 
+                            placeholder='Search chapters here:'
+                            onChange={e => setFilterText(e.target.value)} />
+                        <p>{filteredChapters.length} result(s)</p>
+                    </div>
 
-                            <div style={{ border: '1px solid black', padding: '10px'}}>
-                            <input 
-                                type='text' 
-                                placeholder='Search chapters here:'
-                                onChange={e => setFilterText(e.target.value)} />
-                        </div>
-
-                        <div style={{ maxHeight: '100vh', overflow: 'scroll', border: '1px solid black' }}>
-                            {filteredChapters.map((chapter) => (
-                                <div key={chapter.chapterNumber + chapter.name} style={{ borderBottom: '1px solid black', padding: '10px'}}>
-                                    <h3>{chapter.name}</h3>
-                                    <h5>Last practice: 2 weeks ago</h5>
-                                    <h6>100% memorized</h6>
-                                </div>
-                            ))}
-                        </div>
+                    <div style={{ maxHeight: '100vh', overflow: 'scroll', border: '1px solid black' }}>
+                        {filteredChapters.map((chapter) => (
+                            <div key={chapter.chapterNumber + chapter.name} style={{ borderBottom: '1px solid black', padding: '10px'}}>
+                                <h3>{chapter.name}</h3>
+                                <h5>Last practice: 2 weeks ago</h5>
+                                <h6>100% memorized</h6>
+                            </div>
+                        ))}
                     </div>
                 </div>
-            </>
-        );
-    } else {
+            </div>
+        </>
+    )} else {
         return <div>You do not have access to this page. <Link href='/'>Return home.</Link></div>;
     }
 }

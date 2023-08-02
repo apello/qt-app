@@ -3,10 +3,9 @@ import { User, onAuthStateChanged, signOut } from "firebase/auth";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { chapters, Log, prettyPrintDate } from '../../common/utils';
+import { chapters, ProgressLog, prettyPrintDate } from '../../common/utils';
 import { DocumentData, collection, getDocs } from "firebase/firestore";
 import Header from "@/components/Header";
-import { log } from "console";
 
 const ViewProgress: NextPage = (): JSX.Element => {
     const [user, setUser] = useState<User | null>();
@@ -50,10 +49,10 @@ const ViewProgress: NextPage = (): JSX.Element => {
         if(logs !== undefined && logs !== null) {
             const parsedLogs = JSON.parse(JSON.stringify(logs));
             setMemorizationLogs(
-                parsedLogs!.filter((log: Log) => log.readingType === 'Memorization')
+                parsedLogs!.filter((log: ProgressLog) => log.readingType === 'Memorization')
             );
             setRevisionLogs(
-                parsedLogs!.filter((log: Log) => log.readingType === 'Revision')
+                parsedLogs!.filter((log: ProgressLog) => log.readingType === 'Revision')
             );
         }
     },[logs]);
@@ -82,9 +81,9 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {memorizationLogs.map((log: Log) => (
+                                    {memorizationLogs.map((log: ProgressLog) => (
                                         // Get log ID for key   
-                                        <tr key={log.chapterName+log.chapterNumber+log.verseAmount+log.endVerse}>
+                                        <tr key={log.chapterName+log.number+log.verseAmount+log.endVerse}>
                                             <td style={{ border: '1px solid black' }}>{log.chapterName}</td>
                                             <td style={{ border: '1px solid black' }}>{log.verseAmount} verses</td>
                                             <td style={{ border: '1px solid black' }}>{prettyPrintDate(new Date(log.createdAt.seconds * 1000 + log.createdAt.nanoseconds/1000000))}</td>
@@ -107,9 +106,9 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {revisionLogs.map((log: Log) => (
+                                    {revisionLogs.map((log: ProgressLog) => (
                                         // Get log ID for key   
-                                        <tr key={log.chapterName+log.chapterNumber+log.verseAmount+log.endVerse}>
+                                        <tr key={log.chapterName+log.number+log.verseAmount+log.endVerse}>
                                             <td style={{ border: '1px solid black' }}>{log.chapterName}</td>
                                             <td style={{ border: '1px solid black' }}>{log.verseAmount} verses</td>
                                             <td style={{ border: '1px solid black' }}>{prettyPrintDate(new Date(log.createdAt.seconds * 1000 + log.createdAt.nanoseconds/1000000))}</td>
@@ -137,7 +136,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
 
                     <div style={{ maxHeight: '100vh', overflow: 'scroll', border: '1px solid black' }}>
                         {filteredChapters.map((chapter) => (
-                            <div key={chapter.chapterNumber + chapter.name} style={{ borderBottom: '1px solid black', padding: '10px'}}>
+                            <div key={chapter.number + chapter.name} style={{ borderBottom: '1px solid black', padding: '10px'}}>
                                 <h3>{chapter.name}</h3>
                                 <h5>Last practice: 2 weeks ago</h5>
                                 <h6>100% memorized</h6>

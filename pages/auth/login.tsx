@@ -41,7 +41,7 @@ const Login: NextPage = (): JSX.Element => {
                         placeholder='Enter email...'
                         onChange={(e) => setCredentials({ ...credentials, email: e.target.value })} 
                         required />
-                </label>
+                </label><br/><br/>
                 <label>
                     Password:
                     <input 
@@ -49,7 +49,7 @@ const Login: NextPage = (): JSX.Element => {
                         placeholder='Enter password...'
                         onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} 
                         required />
-                </label>
+                </label><br/><br/>
                 <input type='submit' />
             </form>
             <p>{error}</p>

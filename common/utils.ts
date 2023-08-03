@@ -2,9 +2,8 @@
 // All under userId
 
 export interface ChapterLog {
-    id: number; // number
     name: string;
-    percentComplete: number;
+    lastVerseCompleted: number;
     lastReviewed: Date;
 }
 
@@ -26,10 +25,16 @@ export interface ProgressLog {
     archived: boolean;
 }
 
-export const prettyPrintDate = (date: Date): string => {
-    const dateCopy = new Date(date);
+export const prettyPrintDate = (date: any): string => {
+    const dateCopy = new Date(date.seconds * 1000 + date.nanoseconds/1000000);
     return `${dateCopy.getUTCMonth() + 1}/${dateCopy.getUTCDate()}/${dateCopy.getUTCFullYear()}`;
 };
+
+export const get_today = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+}
 
 // Chapter object
 

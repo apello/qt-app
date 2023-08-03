@@ -27,6 +27,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
             });
     },[]);
 
+
     useEffect(() => {
         const downloadLogs = () => {
             let arr: DocumentData[] = [];
@@ -69,7 +70,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
                     <h5><Link href='/landing'>Home</Link>/View Progress</h5>
                     <h1>Recent Progress</h1>
 
-                    {(memorizationLogs !== undefined && memorizationLogs!.length > 0) ? (
+                    {(memorizationLogs !== undefined) ? (
                         <> 
                             <h3>Memorization</h3>
                             <table style={{ border: '1px solid black' }}>
@@ -80,21 +81,24 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                         <th style={{ border: '1px solid black' }}>Log Date</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    {memorizationLogs.map((log: ProgressLog) => (
-                                        // Get log ID for key   
-                                        <tr key={log.chapterName+log.number+log.verseAmount+log.endVerse}>
-                                            <td style={{ border: '1px solid black' }}>{log.chapterName}</td>
-                                            <td style={{ border: '1px solid black' }}>{log.verseAmount} verses</td>
-                                            <td style={{ border: '1px solid black' }}>{prettyPrintDate(new Date(log.createdAt.seconds * 1000 + log.createdAt.nanoseconds/1000000))}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </>
-                    ) : ( <div style={{ textAlign: 'center' }}>No current progress.</div> )}  
 
-                    {(revisionLogs !== undefined && revisionLogs!.length > 0 ) ? (
+                                {(memorizationLogs!.length > 0) ? (
+                                    <tbody>
+                                        {memorizationLogs.map((log: ProgressLog) => (
+                                            // Get log ID for key   
+                                            <tr key={log.chapterName+log.number+log.verseAmount+log.endVerse}>
+                                                <td style={{ border: '1px solid black' }}>{log.chapterName}</td>
+                                                <td style={{ border: '1px solid black' }}>{log.verseAmount} verses</td>
+                                                <td style={{ border: '1px solid black' }}>{prettyPrintDate(log.createdAt)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                ) : ( <div style={{ textAlign: 'center' }}>No current progress.</div> )}
+                                </table>
+                        </>
+                    ) : ( <></> )}  
+
+                    {(revisionLogs !== undefined) ? (
                         <> 
                             <h3>Revision</h3>
                             <table style={{ border: '1px solid black' }}>
@@ -105,19 +109,21 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                         <th style={{ border: '1px solid black' }}>Log Date</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    {revisionLogs.map((log: ProgressLog) => (
-                                        // Get log ID for key   
-                                        <tr key={log.chapterName+log.number+log.verseAmount+log.endVerse}>
-                                            <td style={{ border: '1px solid black' }}>{log.chapterName}</td>
-                                            <td style={{ border: '1px solid black' }}>{log.verseAmount} verses</td>
-                                            <td style={{ border: '1px solid black' }}>{prettyPrintDate(new Date(log.createdAt.seconds * 1000 + log.createdAt.nanoseconds/1000000))}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
+                                {(revisionLogs!.length > 0) ? (
+                                    <tbody>
+                                        {revisionLogs.map((log: ProgressLog) => (
+                                            // Get log ID for key   
+                                            <tr key={log.chapterName+log.number+log.verseAmount+log.endVerse}>
+                                                <td style={{ border: '1px solid black' }}>{log.chapterName}</td>
+                                                <td style={{ border: '1px solid black' }}>{log.verseAmount} verses</td>
+                                                <td style={{ border: '1px solid black' }}>{prettyPrintDate(log.createdAt)}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                ) : ( <div style={{ textAlign: 'center' }}>No current progress.</div> )}
                             </table>
                         </>
-                    ) : ( <div style={{ textAlign: 'center' }}>No current progress.</div> )}  
+                    ) : ( <></> )}  
                 </div>
 
                 <div style={{ padding: '20px'}}>

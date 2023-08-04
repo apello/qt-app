@@ -5,14 +5,14 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Chapter, ChapterLog, ProgressLog, chapters, get_today } from '../../common/utils';
 import Header from "@/components/Header";
-import { DocumentData, addDoc, collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { DocumentData, addDoc, collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 
 const TrackProgress: NextPage = (): JSX.Element => {
     const [user, setUser] = useState<User | null>();
     const [filterText, setFilterText] = useState('');
     const [currentChapter, setCurrentChapter] = useState<Chapter | null>();
     const [currentChapterLog, setCurrentChapterLog] = useState<ChapterLog | null>();
-    // const [previousLogs, setPreviousLogs] = useState<Array<DocumentData> | null>();
+    const [previousLog, setPreviousLog] = useState<ProgressLog | null>();
 
     const [verseRange, setVerseRange] = useState({ startVerse: 1, endVerse: 1 });
     const [readingType, setReadingType] = useState('Memorization');
@@ -48,29 +48,31 @@ const TrackProgress: NextPage = (): JSX.Element => {
         downloadCurrentChapterLog();
     },[currentChapter, user]);
 
-    // useEffect(() => {
-    //     const downloadPreviousLog = () => {
-    //         if((currentChapter !== undefined && currentChapter !== null) 
-    //         && (user !== undefined && user !== null)) {
-    //             let arr: DocumentData[] = [];
-    //             getDocs(query(
-    //                 collection(db, `data/${user!.uid}/log`), 
-    //                 where('chapterName', '==', currentChapter.name),
-    //                 where('readingType', '==', readingType),
-    //                 orderBy('createdAt', 'desc'),
-    //                 limit(1)
-    //             ))
-    //             .then((logs) => {
-    //                 setPreviousLogs(arr);
-    //             })
-    //             .catch((error) => {
-    //                 setPreviousLogs(null);
-    //                 console.log(`Error downloading previous progress log: ${error}`);
-    //             })
-    //         }
-    //     };
-    //     downloadPreviousLog();
-    // },[currentChapter, readingType, user]);
+    useEffect(() => {
+        const downloadPreviousLog = () => {
+            if((currentChapter !== undefined && currentChapter !== null) 
+            && (user !== undefined && user !== null)) {
+                let arr: DocumentData[] = [];
+                getDocs(query(
+                    collection(db, `data/${user!.uid}/log`), 
+                    where('chapterName', '==', currentChapter.name),
+                    where('readingType', '==', readingType),
+                    orderBy('createdAt', 'desc'),
+                    limit(1)
+                ))
+                .then((logs) => {
+                    logs.docs.map((doc) => arr.push(doc.data()));
+                    let log = JSON.parse(JSON.stringify(arr[0]));
+                    setPreviousLog(log);
+                })
+                .catch((error) => {
+                    setPreviousLog(null);
+                    console.log(`Error downloading previous progress log: ${error}`);
+                })
+            }
+        };
+        downloadPreviousLog();
+    },[currentChapter, readingType, user]);
 
     const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
 
@@ -81,7 +83,7 @@ const TrackProgress: NextPage = (): JSX.Element => {
         setCurrentChapter(chapter);
         // Reset values for next chapter
         setVerseRange({...verseRange, startVerse: 1, endVerse: 1});
-        // setPreviousLogs(null);
+        setPreviousLog(null);
         setCompleted(false);
     };
 
@@ -182,13 +184,11 @@ const TrackProgress: NextPage = (): JSX.Element => {
 
                                 <div style={{ padding: '10px' }}>
 
-                                        {/* {(previousLogs !== undefined && previousLogs !== null) ? (    
+                                        {(previousLog !== undefined && previousLog !== null) ? (    
                                             <p style={{ border: '1px solid black', padding: '10px' }}>Previous Log for {currentChapter.name}: {' '}
                                                 {previousLog.chapterNumber}:{previousLog.startVerse} - {previousLog.chapterNumber}:{previousLog.endVerse} 
                                             </p>
-                                        ) : (
-                                            <></>
-                                        )} */}
+                                        ) : ( <></> )}
 
                                         <p style={{ border: '1px solid black', padding: '10px' }}>Start Verse - {currentChapter.number} : {' '}
                                                 <select 

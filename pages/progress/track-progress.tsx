@@ -3,18 +3,19 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Chapter, ChapterLog, chapters, get_today } from '../../common/utils';
+import { Chapter, ChapterLog, ProgressLog, chapters, get_today } from '../../common/utils';
 import Header from "@/components/Header";
-import { DocumentData, addDoc, collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { DocumentData, addDoc, collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 
 const TrackProgress: NextPage = (): JSX.Element => {
     const [user, setUser] = useState<User | null>();
     const [filterText, setFilterText] = useState('');
     const [currentChapter, setCurrentChapter] = useState<Chapter | null>();
     const [currentChapterLog, setCurrentChapterLog] = useState<ChapterLog | null>();
+    // const [previousLogs, setPreviousLogs] = useState<Array<DocumentData> | null>();
 
     const [verseRange, setVerseRange] = useState({ startVerse: 1, endVerse: 1 });
-    const [readingTypes, setReadingTypes] = useState('Memorization');
+    const [readingType, setReadingType] = useState('Memorization');
     const [completed, setCompleted] = useState(false);
     const [alert, setAlert] = useState<JSX.Element>();
 
@@ -28,14 +29,12 @@ const TrackProgress: NextPage = (): JSX.Element => {
         });
     },[]);
 
-    const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
 
     useEffect(() => {
         const downloadCurrentChapterLog = () => {
-            let arr: DocumentData[] = [];
             if((currentChapter !== undefined && currentChapter !== null) 
             && (user !== undefined && user !== null)) {
-                getDoc(doc(db, `data/${user!.uid}`, 'chapter', `${currentChapter!.number}`))
+                getDoc(doc(db, `data/${user!.uid}/chapter`, `${currentChapter!.number}`))
                 .then((doc) => {
                     const chapter: ChapterLog = JSON.parse(JSON.stringify(doc.data()));
                     setCurrentChapterLog(chapter);
@@ -46,25 +45,50 @@ const TrackProgress: NextPage = (): JSX.Element => {
                 })
             }
         };
-
         downloadCurrentChapterLog();
     },[currentChapter, user]);
 
+    // useEffect(() => {
+    //     const downloadPreviousLog = () => {
+    //         if((currentChapter !== undefined && currentChapter !== null) 
+    //         && (user !== undefined && user !== null)) {
+    //             let arr: DocumentData[] = [];
+    //             getDocs(query(
+    //                 collection(db, `data/${user!.uid}/log`), 
+    //                 where('chapterName', '==', currentChapter.name),
+    //                 where('readingType', '==', readingType),
+    //                 orderBy('createdAt', 'desc'),
+    //                 limit(1)
+    //             ))
+    //             .then((logs) => {
+    //                 setPreviousLogs(arr);
+    //             })
+    //             .catch((error) => {
+    //                 setPreviousLogs(null);
+    //                 console.log(`Error downloading previous progress log: ${error}`);
+    //             })
+    //         }
+    //     };
+    //     downloadPreviousLog();
+    // },[currentChapter, readingType, user]);
+
+    const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
+
     // Will change with autocomplete
+    // Define type for event
     const handleChapterSearch = (e: any) => {
         const chapter = chapterNameToChapter.get(e.target.value);
         setCurrentChapter(chapter);
+        // Reset values for next chapter
         setVerseRange({...verseRange, startVerse: 1, endVerse: 1});
+        // setPreviousLogs(null);
         setCompleted(false);
     };
 
     const handleForm = () => {
-
         // Do some validation to prevent user from spamming same range 
         if((currentChapter !== undefined && currentChapter !== null)
         && (user !== undefined && user !== null)) {
-
-            console.log((verseRange.endVerse - verseRange.startVerse)+1);
             Promise.all([
                 // If log for chapter already exists
                 (currentChapterLog !== undefined && currentChapterLog !== null) ? (
@@ -85,7 +109,8 @@ const TrackProgress: NextPage = (): JSX.Element => {
                     chapterName: currentChapter!.name,
                     createdAt: get_today(),
                     endVerse: (completed) ? currentChapter!.verseCount : verseRange.endVerse,
-                    readingType: readingTypes,
+                    readingType: readingType,
+                    // FIXME: Rewrite and comment these conditionals
                     startVerse: 
                         (completed) ? (
                             (currentChapterLog !== undefined && currentChapterLog !== null) ? currentChapterLog!.lastVerseCompleted : 1
@@ -105,7 +130,7 @@ const TrackProgress: NextPage = (): JSX.Element => {
             ])
         }
     };
-    
+
     if(user) { return (
         <>
             <Header />
@@ -134,6 +159,7 @@ const TrackProgress: NextPage = (): JSX.Element => {
                             <select onChange={handleChapterSearch}>
                                 <option>Al-Fatiha</option>
                                 <option>Al-Ankabut</option>
+                                <option>Al-Baqarah</option>
                             </select>
                         </div>
 
@@ -142,7 +168,7 @@ const TrackProgress: NextPage = (): JSX.Element => {
                                 <div style={{ display: 'flex', borderBottom: '1px solid black', padding: '10px'}}>
                                     <label>
                                         Type of reading: {' '}
-                                        <select onChange={(e) => setReadingTypes(e.target.value)}>
+                                        <select onChange={(e) => setReadingType(e.target.value)}>
                                             <option>Memorization</option>
                                             <option>Revision</option>
                                         </select>
@@ -155,8 +181,16 @@ const TrackProgress: NextPage = (): JSX.Element => {
                                 </div>
 
                                 <div style={{ padding: '10px' }}>
-                                        <div>
-                                            <p style={{ border: '1px solid black', padding: '10px' }}>Start Verse - {currentChapter.number} : {' '}
+
+                                        {/* {(previousLogs !== undefined && previousLogs !== null) ? (    
+                                            <p style={{ border: '1px solid black', padding: '10px' }}>Previous Log for {currentChapter.name}: {' '}
+                                                {previousLog.chapterNumber}:{previousLog.startVerse} - {previousLog.chapterNumber}:{previousLog.endVerse} 
+                                            </p>
+                                        ) : (
+                                            <></>
+                                        )} */}
+
+                                        <p style={{ border: '1px solid black', padding: '10px' }}>Start Verse - {currentChapter.number} : {' '}
                                                 <select 
                                                     onChange={(e) => setVerseRange({ ...verseRange, startVerse: parseInt(e.currentTarget.value) })} 
                                                     disabled={completed}>
@@ -165,16 +199,16 @@ const TrackProgress: NextPage = (): JSX.Element => {
                                                     ))}
                                                 </select>
                                             </p>
-                                            <p style={{ border: '1px solid black', padding: '10px'}}>End Verse - {currentChapter.number} : {' '}
-                                                <select 
-                                                    onChange={(e) => setVerseRange({ ...verseRange, endVerse: parseInt(e.currentTarget.value) })}
-                                                    disabled={completed}>
-                                                    {Array.from(Array(currentChapter.verseCount).keys()).map((verse) => (
-                                                        <option key={verse}>{verse+1}</option>
-                                                    ))}
-                                                </select>
-                                            </p>
-                                        </div>
+                                            
+                                        <p style={{ border: '1px solid black', padding: '10px'}}>End Verse - {currentChapter.number} : {' '}
+                                            <select 
+                                                onChange={(e) => setVerseRange({ ...verseRange, endVerse: parseInt(e.currentTarget.value) })}
+                                                disabled={completed}>
+                                                {Array.from(Array(currentChapter.verseCount).keys()).map((verse) => (
+                                                    <option key={verse}>{verse+1}</option>
+                                                ))}
+                                            </select>
+                                        </p>
 
                                         <div style={{ display: 'flex', justifyContent: 'flex-end'}}>
                                             <button 

@@ -2,6 +2,7 @@
 // All under userId
 
 export interface ChapterLog {
+    map(arg0: (chapter: ChapterLog) => (string | ChapterLog)[]): Iterable<readonly [unknown, unknown]> | null | undefined;
     name: string;
     lastVerseCompleted: number;
     lastReviewed: Date;
@@ -14,8 +15,7 @@ export interface Chapter {
 }
 
 export interface ProgressLog {
-    id: number;
-    number: number;
+    chapterNumber: number;
     chapterName: string;
     verseAmount: number;
     startVerse: number;
@@ -29,6 +29,16 @@ export const prettyPrintDate = (date: any): string => {
     const dateCopy = new Date(date.seconds * 1000 + date.nanoseconds/1000000);
     return `${dateCopy.getUTCMonth() + 1}/${dateCopy.getUTCDate()}/${dateCopy.getUTCFullYear()}`;
 };
+
+// export const lastDateReviewed = (date: any): string => {
+//   const dateCopy = new Date(date.seconds * 1000 + date.nanoseconds/1000000);
+//   return `${dateCopy.getUTCMonth() + 1}/${dateCopy.getUTCDate()}/${dateCopy.getUTCFullYear()}`;
+// }
+
+export const amountMemorized = (lastVerseCompleted: number, chapterName: string, chapterNameToChapter: Map<string, Chapter>): string => {
+  const verseCount = chapterNameToChapter.get(chapterName)!.verseCount;
+  return ((lastVerseCompleted/verseCount)*100).toFixed(0);
+}
 
 export const get_today = () => {
     const today = new Date();

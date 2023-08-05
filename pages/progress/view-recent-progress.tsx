@@ -4,7 +4,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized } from '../../common/utils';
-import { DocumentData, collection, getDocs, limit, query } from "firebase/firestore";
+import { DocumentData, collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import Header from "@/components/Header";
 import { parse } from "path";
 
@@ -34,7 +34,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
         const downloadProgressLogs = () => {
             let arr: DocumentData[] = [];
             if(user !== undefined && user !== null) {
-                getDocs(query(collection(db, `data/${user!.uid}`, 'log'), limit(10)))
+                getDocs(query(collection(db, `data/${user!.uid}`, 'log'), limit(15), orderBy('createdAt', 'desc')))
                 .then((logs) => {
                     logs.docs.map((doc) => arr.push({data: doc.data(), id: doc.id}))
                     // logs.docs.map((doc) => arr.push(doc.data()))
@@ -90,7 +90,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
                     </div>
 
                     <h1>Recent Progress</h1>
-                    <h4>View the last 10 logs you memorized/revised.</h4>
+                    <h4>View the last 15 logs you memorized/revised.</h4>
 
                     <RecentProgressTable
                         memorizationLogs={memorizationLogs}

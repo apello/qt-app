@@ -171,7 +171,7 @@ const TrackProgress: NextPage = (): JSX.Element => {
                                 value={filterText}
                                 onChange={(e) => setFilterText(e.target.value)} /> */}
 
-                            <select onChange={handleChapterSearch}>
+                            <select onChange={handleChapterSearch} value={(currentChapter !== null && currentChapter !== undefined) ? currentChapter!.name : ''}>
                                 <option></option>
                                 <>{chapterOptions}</>
                             </select>

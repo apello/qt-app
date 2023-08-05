@@ -4,7 +4,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
 import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized } from '../../common/utils';
-import { DocumentData, collection, getDocs, limit, query } from "firebase/firestore";
+import { DocumentData, collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import Header from "@/components/Header";
 import { parse } from "path";
 import { set } from "firebase/database";
@@ -32,7 +32,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
         const downloadProgressLogs = () => {
             let arr: DocumentData[] = [];
             if(user !== undefined && user !== null) {
-                getDocs(collection(db, `data/${user!.uid}`, 'log'))
+                getDocs(query(collection(db, `data/${user!.uid}`, 'log'), orderBy('createdAt', 'desc')))
                 .then((logs) => {
                     logs.docs.map((doc) => arr.push({data: doc.data(), id: doc.id}))
                     // logs.docs.map((doc) => arr.push(doc.data()))

@@ -1,6 +1,8 @@
 
 // All under userId
 
+import { Key } from "react";
+
 export interface ChapterLog {
     map(arg0: (chapter: ChapterLog) => (string | ChapterLog)[]): Iterable<readonly [unknown, unknown]> | null | undefined;
     name: string;
@@ -15,6 +17,8 @@ export interface Chapter {
 }
 
 export interface ProgressLog {
+    data: any;
+    id: Key | null | undefined;
     chapterNumber: number;
     chapterName: string;
     verseAmount: number;
@@ -27,7 +31,7 @@ export interface ProgressLog {
 
 export const prettyPrintDate = (date: any): string => {
     const dateCopy = new Date(date.seconds * 1000 + date.nanoseconds/1000000);
-    return `${dateCopy.getUTCMonth() + 1}/${dateCopy.getUTCDate()}/${dateCopy.getUTCFullYear()}`;
+    return dateCopy.toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
 };
 
 // export const lastDateReviewed = (date: any): string => {

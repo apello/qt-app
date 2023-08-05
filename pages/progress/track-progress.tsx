@@ -3,14 +3,14 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Chapter, ChapterLog, ProgressLog, chapters, get_today } from '../../common/utils';
+import { Chapter, ChapterLog, ProgressLog, chapters, get_today, prettyPrintDate } from '../../common/utils';
 import Header from "@/components/Header";
 import { DocumentData, addDoc, collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { useRouter } from "next/router";
 
 const TrackProgress: NextPage = (): JSX.Element => {
     const [user, setUser] = useState<User | null>();
     const [filterText, setFilterText] = useState('');
-    const [currentChapter, setCurrentChapter] = useState<Chapter | null>();
     const [currentChapterLog, setCurrentChapterLog] = useState<ChapterLog | null>();
     const [previousLog, setPreviousLog] = useState<ProgressLog | null>();
 
@@ -18,6 +18,11 @@ const TrackProgress: NextPage = (): JSX.Element => {
     const [readingType, setReadingType] = useState('Memorization');
     const [completed, setCompleted] = useState(false);
     const [alert, setAlert] = useState<JSX.Element>();
+
+    const { query : { chapter } } = useRouter();
+    const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
+    const params = (chapter !== null && chapter !== undefined) ? chapterNameToChapter.get(chapter!.toString()) : undefined;
+    const [currentChapter, setCurrentChapter] = useState<Chapter | undefined>(params);
 
     useEffect(() => {
         onAuthStateChanged(auth, (authUser) => {
@@ -74,8 +79,6 @@ const TrackProgress: NextPage = (): JSX.Element => {
         downloadPreviousLog();
     },[currentChapter, readingType, user]);
 
-    const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
-
     // Will change with autocomplete
     // Define type for event
     const handleChapterSearch = (e: any) => {
@@ -96,7 +99,13 @@ const TrackProgress: NextPage = (): JSX.Element => {
                 (currentChapterLog !== undefined && currentChapterLog !== null) ? (
                     updateDoc(doc(db, `data/${user!.uid}/chapter`, `${currentChapter!.number}`), {
                         lastReviewed: get_today(),
-                        lastVerseCompleted: (completed) ? currentChapter.verseCount : verseRange.endVerse
+                        lastVerseCompleted: 
+                        // If it's completed, put chapter verse count, else if it's not revision and the new end verse 
+                        // is larger than the current one, put that in, else keep it the same
+                        (completed) ? ( currentChapter.verseCount ) : (
+                            (readingType === 'Memorization' && currentChapterLog.lastVerseCompleted < verseRange.endVerse) ?  
+                            verseRange.endVerse : currentChapterLog.lastVerseCompleted
+                        )
                     })
                 ) : (
                     setDoc(doc(db, `data/${user!.uid}/chapter`, `${currentChapter!.number}`), {
@@ -133,6 +142,10 @@ const TrackProgress: NextPage = (): JSX.Element => {
         }
     };
 
+    const chapterOptions = chapters.map((chapter) => {
+        return <option key={chapter.number}>{chapter.name}</option>
+    });
+
     if(user) { return (
         <>
             <Header />
@@ -140,7 +153,7 @@ const TrackProgress: NextPage = (): JSX.Element => {
                 <div style={{ padding: '20px', width: '100%'}}>
 
                     <p>{alert}</p>
-                    <h5><Link href='/landing'>Home</Link>/View Progress</h5>
+                    <h5><Link href='/landing'>Home</Link>/Track Progress</h5>
                     <h1>Track Progress</h1>
                     <h5>Track the individual progress you make, or input progress on the challenges you have created. Tracking currently only looks at chapter-based revision and memorization. </h5>
                     <select>
@@ -159,9 +172,8 @@ const TrackProgress: NextPage = (): JSX.Element => {
                                 onChange={(e) => setFilterText(e.target.value)} /> */}
 
                             <select onChange={handleChapterSearch}>
-                                <option>Al-Fatiha</option>
-                                <option>Al-Ankabut</option>
-                                <option>Al-Baqarah</option>
+                                <option></option>
+                                <>{chapterOptions}</>
                             </select>
                         </div>
 
@@ -186,7 +198,8 @@ const TrackProgress: NextPage = (): JSX.Element => {
 
                                         {(previousLog !== undefined && previousLog !== null) ? (    
                                             <p style={{ border: '1px solid black', padding: '10px' }}>Previous Log for {currentChapter.name}: {' '}
-                                                {previousLog.chapterNumber}:{previousLog.startVerse} - {previousLog.chapterNumber}:{previousLog.endVerse} 
+                                                {previousLog.chapterNumber}:{previousLog.startVerse} - {previousLog.chapterNumber}:{previousLog.endVerse}  {' '}
+                                                on {prettyPrintDate(previousLog.createdAt)}
                                             </p>
                                         ) : ( <></> )}
 

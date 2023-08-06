@@ -2,12 +2,10 @@ import { auth, db } from "@/firebase/clientApp";
 import { User, onAuthStateChanged, signOut } from "firebase/auth";
 import { NextPage } from "next";
 import Link from "next/link";
-import { JSXElementConstructor, Key, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react";
-import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized } from '../../common/utils';
-import { DocumentData, collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized, sortLogs } from '../../common/utils';
+import { DocumentData, collection, getDocs, orderBy, query } from "firebase/firestore";
 import Header from "@/components/Header";
-import { parse } from "path";
-import { set } from "firebase/database";
 
 const ViewProgress: NextPage = (): JSX.Element => {
     const [user, setUser] = useState<User | null>();
@@ -15,24 +13,23 @@ const ViewProgress: NextPage = (): JSX.Element => {
     const [searchText, setSearchText] = useState('');
     const [logs, setLogs] = useState<Array<DocumentData>>();
     const [chapterLogs, setChapterLogs] = useState<Array<DocumentData>>();
-    const [sortOption, setSortOption] = useState('');
+    const [sortOption, setSortOption] = useState('alphabetical');
 
     useEffect(() => {
-            onAuthStateChanged(auth, (authUser) => {
-                if(authUser) {
-                    setUser(authUser);
-                } else {
-                    setUser(null);
-                }
-            });
+        onAuthStateChanged(auth, (authUser) => {
+            if(authUser) {
+                setUser(authUser);
+            } else {
+                setUser(null);
+            }
+        });
     },[]);
-
 
     useEffect(() => {
         const downloadProgressLogs = () => {
             let arr: DocumentData[] = [];
             if(user !== undefined && user !== null) {
-                getDocs(query(collection(db, `data/${user!.uid}`, 'log'), orderBy('createdAt', 'desc')))
+                getDocs(collection(db, `data/${user!.uid}`, 'log'))
                 .then((logs) => {
                     logs.docs.map((doc) => arr.push({data: doc.data(), id: doc.id}))
                     // logs.docs.map((doc) => arr.push(doc.data()))
@@ -82,14 +79,14 @@ const ViewProgress: NextPage = (): JSX.Element => {
                         logs={logs ?? []}
                         filterText={filterText}
                         setFilterText={setFilterText} 
-                        setSortOption={setSortOption} /> 
+                        setSortOption={setSortOption}
+                        sortOption={sortOption} /> 
                 </div>
 
                 <OverallProgress   
                     setSearchText={setSearchText}
                     searchText={searchText}
                     chapterLogs={chapterLogs ?? []} />
-
             </div>
         </>
     )} else {
@@ -97,26 +94,26 @@ const ViewProgress: NextPage = (): JSX.Element => {
     }
 }
 
-
 const AllProgressTable: React.FC<{ 
     logs: Array<DocumentData>, 
     filterText: string, 
+    sortOption: string,
     setFilterText: (_: string) => void,
-    setSortOption: (_: string) => void 
-}> = ({ logs, filterText, setFilterText, setSortOption}) => {
+    setSortOption: (_: string) => void,
+}> = ({ logs, filterText, setFilterText, setSortOption, sortOption}) => {
     
-    const parsedLogs = JSON.parse(JSON.stringify(logs));
-    const filteredParsedLogs = parsedLogs.filter(
+    const parsedLogs: Array<ProgressLog> = JSON.parse(JSON.stringify(logs));
+    const filteredLogs = parsedLogs.filter(
         (log: ProgressLog) => log.data.chapterName.toLowerCase().indexOf(filterText.toLowerCase()) !== -1
     );
-
-
+    const sortedLogs = sortLogs(sortOption, filteredLogs);
+    
     return (
         <>
-            {(filteredParsedLogs !== undefined) ? (
+            {(parsedLogs !== undefined) ? (
                 <> 
                     <div style={{ display: 'flex', padding: '5px', boxSizing: 'border-box', gap: '15px', justifyContent: 'end', alignItems: 'end' }}>
-                        <p>{parsedLogs.length} logs</p>
+                        <p>{sortedLogs.length} logs</p>
                         <input 
                             type='text'
                             placeholder='Search by chapter name...'
@@ -126,8 +123,9 @@ const AllProgressTable: React.FC<{
                             <option disabled>Sort by:</option>
                             <option value='alphabetical'>Chapter Name - Alphabetically</option>
                             <option value='verseAmount'>Verse Amount Completed</option>
-                            <option value='readingType'>Reading Type</option>
-                            <option value='date'>Log Date</option>
+                            <option value='memorization'>Reading Type - Memorization</option>
+                            <option value='revision'>Reading Type - Revision</option>
+                            <option value='createdAt'>Log Date</option>
                         </select>
                     </div>
                     <table style={{ border: '1px solid black' }}>
@@ -141,12 +139,12 @@ const AllProgressTable: React.FC<{
                             </tr>
                         </thead>
 
-                        {(filteredParsedLogs!.length > 0) ? (
+                        {(sortedLogs!.length > 0) ? (
                             <tbody>
-                                {filteredParsedLogs.map((log: ProgressLog) => (
+                                {sortedLogs.map((log: ProgressLog) => (
                                     // Get log ID for key   
                                     <tr key={log.id}>
-                                        <td style={{ border: '1px solid black' }}>{log.data.chapterName}</td>
+                                        <td style={{ border: '1px solid black' }}>{log.data.chapterNumber}. {log.data.chapterName}</td>
                                         <td style={{ border: '1px solid black' }}>{log.data.verseAmount} verses</td>
                                         <td style={{ border: '1px solid black' }}>{log.data.chapterNumber}:{log.data.startVerse} -  {log.data.chapterNumber}:{log.data.endVerse}</td>
                                         <td style={{ border: '1px solid black' }}>{log.data.readingType}</td>
@@ -157,7 +155,7 @@ const AllProgressTable: React.FC<{
                         ) : ( <p style={{ textAlign: 'center' }}>No logs.</p> )}
                         </table>
                 </>
-            ) : ( <></> )}  
+            ) : ( <>Loading...</> )}  
         </>
     );
 };
@@ -195,7 +193,7 @@ const OverallProgress: React.FC<{
                 {filteredChapters.map((chapter) => (
                     <div key={chapter.number + chapter.name} style={{ borderBottom: '1px solid black', padding: '10px'}}>
                         <div style={{ display: 'flex', alignContent: 'center' }}>
-                            <h3>{chapter.name}</h3>
+                            <h3>{chapter.number}. {chapter.name}</h3>
                             <p style={{ paddingLeft: '5px'}}>
                                 <Link 
                                     href={{

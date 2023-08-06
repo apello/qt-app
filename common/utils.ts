@@ -44,11 +44,40 @@ export const amountMemorized = (lastVerseCompleted: number, chapterName: string,
   return ((lastVerseCompleted/verseCount)*100).toFixed(0);
 }
 
-export const get_today = () => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return today;
+export const get_today = () => new Date();
+
+export const sortLogs = (sortOption: string, logs: Array<ProgressLog>): Array<ProgressLog>  => {
+  let sortedLogs: Array<ProgressLog> = []
+  switch(sortOption) {
+    case 'alphabetical':
+      sortedLogs = logs.sort()
+      break;
+    case 'verseAmount':
+      sortedLogs = logs.sort((a, b) => { return b.data.verseAmount - a.data.verseAmount })
+      break;
+    case 'memorization':
+      sortedLogs = logs.sort((a, b) => {
+        if(a.data.readingType.toLowerCase() < b.data.readingType.toLowerCase()) return -1;
+        if(a.data.readingType.toLowerCase() > b.data.readingType.toLowerCase()) return 1;
+        return 0;
+      })
+      break;
+    case 'revision':
+      sortedLogs = logs.sort((a, b) => {
+        if(b.data.readingType.toLowerCase() < a.data.readingType.toLowerCase()) return -1;
+        if(b.data.readingType.toLowerCase() > a.data.readingType.toLowerCase()) return 1;
+        return 0;
+      })
+      break;
+    case 'createdAt':
+      sortedLogs = logs.sort((a, b) => { return a.data.createdAt - b.data.createdAt })
+
+      break;
+  }
+
+  return sortedLogs
 }
+
 
 // Chapter object
 

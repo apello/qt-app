@@ -34,7 +34,6 @@ const TrackProgress: NextPage = (): JSX.Element => {
         });
     },[]);
 
-
     useEffect(() => {
         const downloadCurrentChapterLog = () => {
             if((currentChapter !== undefined && currentChapter !== null) 
@@ -80,7 +79,7 @@ const TrackProgress: NextPage = (): JSX.Element => {
     },[currentChapter, readingType, user]);
 
     // Will change with autocomplete
-    // Define type for event
+    // FIXME: Define type for event
     const handleChapterSearch = (e: any) => {
         const chapter = chapterNameToChapter.get(e.target.value);
         setCurrentChapter(chapter);
@@ -122,17 +121,28 @@ const TrackProgress: NextPage = (): JSX.Element => {
                     endVerse: (completed) ? currentChapter!.verseCount : verseRange.endVerse,
                     readingType: readingType,
                     // FIXME: Rewrite and comment these conditionals
+
+                    /* 
+                        If completed
+                            If current chapter log exists
+                                If the current chapter log's last completed verse doesn't equal the verse count of the chapter, start verse is last verse completed
+                                Else start verse is 1
+                            Else startverse is 1
+                        Else startverse is the inputted start verse
+                    */
                     startVerse: 
                         (completed) ? (
-                            (currentChapterLog !== undefined && currentChapterLog !== null) ? currentChapterLog!.lastVerseCompleted : 1
-                        ) : verseRange.startVerse,
+                            ((currentChapterLog !== undefined && currentChapterLog !== null)) ? (
+                                (currentChapterLog.lastVerseCompleted !== currentChapter.verseCount) ? (currentChapterLog!.lastVerseCompleted) : ( 1 ) 
+                            ) : ( 1 )
+                        ) : (verseRange.startVerse),
                     verseAmount: 
                         (completed) ? (
                             (currentChapterLog !== undefined && currentChapterLog !== null) ? (currentChapter!.verseCount - currentChapterLog!.lastVerseCompleted) + 1 : currentChapter!.verseCount
                         ) : (verseRange.endVerse - verseRange.startVerse)+1,
                 })
                 .then(() => {
-                    setAlert(<>Successfuly logged progress! View <Link href='/progress/view-progress'>log here</Link> or see your overall progress here!</>);
+                    setAlert(<>Successfuly logged progress! View <Link href='/progress/view-recent-progress'>log here</Link> or see your overall progress here!</>);
                 })
                 .catch((error) => {
                     console.log(`Error updating logs: ${error}`);
@@ -143,14 +153,14 @@ const TrackProgress: NextPage = (): JSX.Element => {
     };
 
     const chapterOptions = chapters.map((chapter) => {
-        return <option key={chapter.number}>{chapter.name}</option>
+        return <option key={chapter.number} value={chapter.name}>{chapter.number}. {chapter.name}</option>
     });
 
     if(user) { return (
         <>
             <Header />
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <div style={{ padding: '20px', width: '100%'}}>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                <div style={{ padding: '20px' }}>
 
                     <p>{alert}</p>
                     <h5><Link href='/landing'>Home</Link>/Track Progress</h5>
@@ -197,23 +207,26 @@ const TrackProgress: NextPage = (): JSX.Element => {
                                 <div style={{ padding: '10px' }}>
 
                                         {(previousLog !== undefined && previousLog !== null) ? (    
-                                            <p style={{ border: '1px solid black', padding: '10px' }}>Previous Log for {currentChapter.name}: {' '}
+                                            <p style={{ border: '1px solid black', padding: '10px' }}>
+                                                Previous Log for {currentChapter.name}: {' '}
                                                 {previousLog.chapterNumber}:{previousLog.startVerse} - {previousLog.chapterNumber}:{previousLog.endVerse}  {' '}
                                                 on {prettyPrintDate(previousLog.createdAt)}
                                             </p>
                                         ) : ( <></> )}
 
-                                        <p style={{ border: '1px solid black', padding: '10px' }}>Start Verse - {currentChapter.number} : {' '}
-                                                <select 
-                                                    onChange={(e) => setVerseRange({ ...verseRange, startVerse: parseInt(e.currentTarget.value) })} 
-                                                    disabled={completed}>
-                                                    {Array.from(Array(currentChapter.verseCount).keys()).map((verse) => (
-                                                        <option key={verse}>{verse+1}</option>
-                                                    ))}
-                                                </select>
-                                            </p>
+                                        <p style={{ border: '1px solid black', padding: '10px' }}>
+                                            Start Verse - {currentChapter.number} : {' '}
+                                            <select 
+                                                onChange={(e) => setVerseRange({ ...verseRange, startVerse: parseInt(e.currentTarget.value) })} 
+                                                disabled={completed}>
+                                                {Array.from(Array(currentChapter.verseCount).keys()).map((verse) => (
+                                                    <option key={verse}>{verse+1}</option>
+                                                ))}
+                                            </select>
+                                         </p>
                                             
-                                        <p style={{ border: '1px solid black', padding: '10px'}}>End Verse - {currentChapter.number} : {' '}
+                                        <p style={{ border: '1px solid black', padding: '10px'}}>
+                                            End Verse - {currentChapter.number} : {' '}
                                             <select 
                                                 onChange={(e) => setVerseRange({ ...verseRange, endVerse: parseInt(e.currentTarget.value) })}
                                                 disabled={completed}>

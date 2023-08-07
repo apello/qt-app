@@ -17,13 +17,14 @@ const ViewProgress: NextPage = (): JSX.Element => {
     const [revisionLogs, setRevisionLogs] = useState<any>();
 
     useEffect(() => {
-            onAuthStateChanged(auth, (authUser) => {
-                if(authUser) {
-                    setUser(authUser);
-                } else {
-                    setUser(null);
-                }
-            });
+        const onlisten = onAuthStateChanged(auth, (authUser) => {
+            authUser
+                ? setUser(authUser)
+                : setUser(null);
+        });
+        return () => {
+            onlisten();
+        }
     },[]);
 
     useEffect(() => {
@@ -63,13 +64,13 @@ const ViewProgress: NextPage = (): JSX.Element => {
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
                 <div style={{ padding: '20px'}}>
                     <h5><Link href='/landing'>Home</Link>/View Progress</h5>
+                    <h1>Recent Progress</h1>
 
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <p style={{ border: '1px solid black', padding: '5px' }}>Recent Progress</p>
                         <p style={{ border: '1px solid black', padding: '5px' }}><Link href='/progress/view-all-progress'>All Progress</Link></p>
                     </div>
 
-                    <h1>Recent Progress</h1>
                     <h4>View the last 15 logs you memorized/revised.</h4>
 
                     <RecentProgressTable

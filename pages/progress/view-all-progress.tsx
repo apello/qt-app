@@ -15,14 +15,16 @@ const ViewProgress: NextPage = (): JSX.Element => {
     const [chapterLogs, setChapterLogs] = useState<Array<DocumentData>>();
     const [sortOption, setSortOption] = useState('alphabetical');
 
+    
     useEffect(() => {
-        onAuthStateChanged(auth, (authUser) => {
-            if(authUser) {
-                setUser(authUser);
-            } else {
-                setUser(null);
-            }
+        const onlisten = onAuthStateChanged(auth, (authUser) => {
+            authUser
+                ? setUser(authUser)
+                : setUser(null);
         });
+        return () => {
+            onlisten();
+        }
     },[]);
 
     useEffect(() => {
@@ -59,20 +61,21 @@ const ViewProgress: NextPage = (): JSX.Element => {
         downloadChapterLogs();
         downloadProgressLogs();
     },[user]);
+
        
     if(user) { return (
         <>
             <Header />
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignContent: 'center' }}>
                 <div style={{ padding: '20px'}}>
                     <h5><Link href='/landing'>Home</Link>/View Progress</h5>
+                    <h1>All Progress</h1>
 
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <p style={{ border: '1px solid black', padding: '5px' }}><Link href='/progress/view-recent-progress'>Recent Progress</Link></p>
                         <p style={{ border: '1px solid black', padding: '5px' }}>All Progress</p>
                     </div>
 
-                    <h1>All Progress</h1>
                     <h4>View all progress logs of memorization/revision.</h4>
 
                     <AllProgressTable 
@@ -112,7 +115,7 @@ const AllProgressTable: React.FC<{
         <>
             {(parsedLogs !== undefined) ? (
                 <> 
-                    <div style={{ display: 'flex', padding: '5px', boxSizing: 'border-box', gap: '15px', justifyContent: 'end', alignItems: 'end' }}>
+                    <div style={{ display: 'flex', padding: '5px', boxSizing: 'border-box', gap: '15px', }}>
                         <p>{sortedLogs.length} logs</p>
                         <input 
                             type='text'
@@ -142,7 +145,6 @@ const AllProgressTable: React.FC<{
                         {(sortedLogs!.length > 0) ? (
                             <tbody>
                                 {sortedLogs.map((log: ProgressLog) => (
-                                    // Get log ID for key   
                                     <tr key={log.id}>
                                         <td style={{ border: '1px solid black' }}>{log.data.chapterNumber}. {log.data.chapterName}</td>
                                         <td style={{ border: '1px solid black' }}>{log.data.verseAmount} verses</td>

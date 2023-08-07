@@ -5,20 +5,18 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const Home: NextPage = (): JSX.Element => {
-
     const [user, setUser] = useState<User | null>();
 
-    useEffect( 
-        () => {
-            onAuthStateChanged(auth, (authUser) => {
-                if(authUser) {
-                    setUser(authUser);
-                } else {
-                    setUser(null);
-                }
-            });
-        },[]
-    );
+    useEffect(() => {
+        const onlisten = onAuthStateChanged(auth, (authUser) => {
+            authUser
+                ? setUser(authUser)
+                : setUser(null);
+        });
+        return () => {
+            onlisten();
+        }
+    },[]);
 
     if(user) { return (
         <>
@@ -35,6 +33,11 @@ const Home: NextPage = (): JSX.Element => {
             <button>
                 <Link href='auth/login'>
                     Login
+                </Link>
+            </button>
+            <button>
+                <Link href='auth/signup'>
+                    Signup
                 </Link>
             </button>
         </>

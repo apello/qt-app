@@ -26,6 +26,7 @@ const Header = (): JSX.Element => {
             </h1>
             <nav style={{ display: 'inherit', flexDirection: 'row',flexGrow: '1', justifyContent: 'flex-end', padding: '15px'}}>
                     <Link href='/landing' style={{ marginRight: '10px' }}>Home</Link>
+                    <Link href='/settings/' style={{ marginRight: '10px' }}>Settings</Link>
                     <a onClick={handleSignOut}>Sign out</a>               
             </nav>
         </div>

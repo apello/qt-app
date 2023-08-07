@@ -1,7 +1,7 @@
 
 // All under userId
 
-import { Key } from "react";
+import { Key, useEffect, useState } from "react";
 
 export interface ChapterLog {
     map(arg0: (chapter: ChapterLog) => (string | ChapterLog)[]): Iterable<readonly [unknown, unknown]> | null | undefined;
@@ -29,9 +29,42 @@ export interface ProgressLog {
     archived: boolean;
 }
 
+// export const useFirebaseAuthentication = (onAuthStateChanged: { (auth: Auth, nextOrObserver: NextOrObserver<User>, error?: ErrorFn | undefined, completed?: CompleteFn | undefined): Unsubscribe; (arg0: (authUser: any) => void): any; }) => {
+//   const [authUser, setAuthUser] = useState(null);
+
+//   useEffect(() =>{
+//      const unlisten = onAuthStateChanged(
+//         authUser => {
+//           authUser
+//             ? setAuthUser(authUser)
+//             : setAuthUser(null);
+//         },
+//      );
+//      return () => {
+//          unlisten();
+//      }
+//   }, [onAuthStateChanged]);
+
+//   return authUser
+// }
+
+// Add more restrictions
+export const credentialsValid = (credentials: any): boolean => {
+  return credentials.email !== "" && credentials.password !== "";
+}
+
+export const registrationCredentialsValid = (credentials: any): boolean => {
+  return credentials.displayName !== "" && credentials.email !== "" && credentials.password !== "";
+}
+
 export const prettyPrintDate = (date: any): string => {
     const dateCopy = new Date(date.seconds * 1000 + date.nanoseconds/1000000);
     return dateCopy.toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+};
+
+export const prettyPrintNormalDate = (date: any): string => {
+  const dateCopy = new Date(date);
+  return dateCopy.toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
 };
 
 // export const lastDateReviewed = (date: any): string => {
@@ -47,10 +80,10 @@ export const amountMemorized = (lastVerseCompleted: number, chapterName: string,
 export const get_today = () => new Date();
 
 export const sortLogs = (sortOption: string, logs: Array<ProgressLog>): Array<ProgressLog>  => {
-  let sortedLogs: Array<ProgressLog> = []
+  let sortedLogs: Array<ProgressLog> = [];
   switch(sortOption) {
     case 'alphabetical':
-      sortedLogs = logs.sort()
+      sortedLogs = logs.sort();
       break;
     case 'verseAmount':
       sortedLogs = logs.sort((a, b) => { return b.data.verseAmount - a.data.verseAmount })
@@ -71,7 +104,9 @@ export const sortLogs = (sortOption: string, logs: Array<ProgressLog>): Array<Pr
       break;
     case 'createdAt':
       sortedLogs = logs.sort((a, b) => { return a.data.createdAt - b.data.createdAt })
-
+      break;
+    default: 
+      sortedLogs = logs.sort();
       break;
   }
 

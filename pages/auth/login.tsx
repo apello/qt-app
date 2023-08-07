@@ -25,7 +25,7 @@ const Login: NextPage = (): JSX.Element => {
                     router.push('/landing');
                 })
                 .catch(() => {
-                    setError('Username/password combination does not match! Please try again.');
+                    setError('Username/password do not exist! Please try again.');
                 })
         }
     }

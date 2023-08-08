@@ -1,54 +1,92 @@
+import ErrorPage from "@/components/ErrorPage";
 import Header from "@/components/Header";
+import LoadingPage from "@/components/LoadingPage";
 import { auth } from "@/firebase/clientApp";
-import { User, onAuthStateChanged, signOut } from "firebase/auth";
+import { Alert, Card, Container, CssVarsProvider, Typography, Link, styled, Button, Tooltip, Box } from "@mui/joy";
 import { NextPage } from "next";
-import Link from "next/link";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useState } from "react";
+import IconButton from '@mui/joy/IconButton';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const Landing: NextPage = (): JSX.Element => {
-    const [user, setUser] = useState<User | null>();
+    const [user, loading, error] = useAuthState(auth);
     const { query : { status } } = useRouter();
-    
-    useEffect(() => {
-        const onlisten = onAuthStateChanged(auth, (authUser) => {
-            authUser
-                ? setUser(authUser)
-                : setUser(null);
-        });
-        return () => {
-            onlisten();
-        }
-    },[]);
+    const [open, setOpen] = useState(true);
 
-    if(user) { return (
-        <>
-            <Header />
+    const CardElement = styled(Card)(({
+        textAlign: 'left',
+        boxShadow: 'none',
+        border: '1px solid #EAEAEA',
+        '&:hover': {
+          border: '1px solid #4D72F5',
+        },
+        width: '300px',
+        margin: '20px',
+        backgroundColor: 'white'
+    }));
 
-            {(status === 'new-user') ? (
-                <div style={{ border: '1px solid black', padding: '10px', margin: '5px'}}>Welcome to Quran Tracker App! Please verify your email using the link in your inbox!</div>
-            ) : ( <></> )}
+    if(loading){ return <LoadingPage /> }
+    if(error) { return <ErrorPage /> }
+    return (
+        <CssVarsProvider>
+            {(user) ? (
+                <Box>
+                    <Header />
+                    <Container sx={{ my: 3 }}>
 
-            <h3 style={{ paddingLeft: '10px' }}>Welcome, {user.displayName}</h3>
+                        {(status === 'new-user') ? (
+                            <Alert 
+                                variant="soft" 
+                                sx={{ margin: '5px'}}
+                                endDecorator={
+                                    <IconButton 
+                                        variant="plain" 
+                                        size="sm" 
+                                        color="neutral" 
+                                        onClick={() => setOpen(false)}>
+                                        <CloseRoundedIcon />
+                                    </IconButton>
+                                }>
+                                    Welcome to Quran Tracker App! Please verify your email using the link in your inbox!
+                            </Alert>
+                        ) : ( <></> )}
 
-            <main style={{ display: 'flex' }}>
-                <div style={{ border: '1px solid black', padding: '10px', margin: '10px' }}>
-                    <h3>Track Progress</h3>
-                    <h5>Memorized a new verse? Revised a previous page? Track it here!</h5>
-                    <button><Link href="progress/track-progress">Track Progress</Link></button>
-                </div>
+                        <Typography level='h1' sx={{ ml: 3, mt: 4, mb: 2 }}>Welcome, {user.displayName}</Typography>
 
-                <div style={{ border: '1px solid black', padding: '10px', margin: '10px' }}>
-                    <h3>See Progress</h3>
-                    <h5>Alhamdillulah, you have been working hard. To track your recent progress, click here.</h5>
-                    <button><Link href="progress/view-recent-progress">See Progress</Link></button>
-                </div>
-            </main>
-            
-        </>
-    )} else {
-        return <div>You do not have access to this page. <Link href='/'>Return home.</Link></div>;
-    }
+                        <Box sx={{ display: 'flex' }}>
+                            <CardElement>
+                                <Typography level='title-lg'>Track Progress</Typography>
+                                <Typography level='body-md'>Memorized a new verse? Revised a previous page? Track it here!</Typography>
+                                <Button sx={{ mt: 2 }} variant="outlined">
+                                    <NextLink href="progress/track-progress">
+                                        <Link overlay>Track Progress</Link>
+                                    </NextLink>
+                                </Button>
+                            </CardElement>
+
+                            <CardElement>
+                                <Typography level='title-lg'>See Progress</Typography>
+                                <Typography level='body-md'>
+                                    <Tooltip title='All Praise to God'>
+                                        <Typography>Alhamdillulah</Typography>
+                                    </Tooltip>, you have been working hard. To track your recent progress, click here.</Typography>
+                                <Button sx={{ mt: 2 }} variant="outlined">
+                                    <NextLink href="progress/view-recent-progress">
+                                        <Link overlay>See Progress</Link>
+                                    </NextLink>
+                                </Button>
+                            </CardElement>
+                        </Box>
+                    </Container>
+                </Box>
+            ) : ( 
+                <Typography>You do not have access to this page. <Link href='/'>Return home.</Link></Typography>
+            )}
+        </CssVarsProvider>
+    );
 }
 
 export default Landing;

@@ -1,18 +1,22 @@
 import { auth } from "@/firebase/clientApp";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { Box, Button, CssVarsProvider, FormControl, FormLabel, Grid, Input, Link, Sheet, Typography, styled } from "@mui/joy";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { FormEventHandler, useState } from "react";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import SendIcon from '@mui/icons-material/Send';
+import { credentialsValid } from "@/common/utils";
 
 
-// Add more restrictions
-const credentialsValid = (credentials: any): boolean => {
-    return credentials.email !== "" && credentials.password !== "";
-}
-
+// Add more restrictions to credentials
 const Login: NextPage = (): JSX.Element => {
     const [credentials, setCredentials] = useState({ email: '', password: ''});
-    const [error, setError] = useState('');
+    const [message, setMessage] = useState("")
+    const [
+        signInWithEmailAndPassword,
+        user,
+        loading,
+    ] = useSignInWithEmailAndPassword(auth);
 
     const router = useRouter();
 
@@ -20,40 +24,117 @@ const Login: NextPage = (): JSX.Element => {
         e.preventDefault();
 
         if(credentialsValid(credentials)) {
-            signInWithEmailAndPassword(auth, credentials.email, credentials.password)
+            signInWithEmailAndPassword(credentials.email, credentials.password)
                 .then(() => {
                     router.push('/landing');
                 })
                 .catch(() => {
-                    setError('Username/password do not exist! Please try again.');
-                })
+                    setMessage('Email/password do not exist! Please try again.');
+                });
         }
     }
 
+    const LinkElement = styled(Link)(({
+        cursor: 'pointer',
+        textDecoration: 'none',
+        color: '#000',
+    }));
+
+    const LinkHolder = styled(Sheet)(({ theme }) => ({
+        backgroundColor:
+          theme.palette.mode === 'dark' ? theme.palette.background.level1 : '#fff',
+        ...theme.typography["body-md"],
+        padding: theme.spacing(1),
+        textAlign: 'center',
+        color: theme.vars.palette.text.secondary,
+        cursor: 'pointer'
+    }));
+
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <h3>Login:</h3>
-                <label>
-                    Email:
-                    <input 
-                        type='email' 
-                        placeholder='Enter email...'
-                        onChange={(e) => setCredentials({ ...credentials, email: e.target.value })} 
+        <CssVarsProvider>
+            <Box sx={{ p: 2 }} >
+                <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+                    <Grid xs={6}>
+                        <Typography level="h3">
+                            <LinkElement href='/'>Quran Tracker</LinkElement>
+                        </Typography>
+                    </Grid>
+                    <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row" }}>
+                        <LinkHolder>
+                            <Typography>
+                                <LinkElement href='/auth/login'>Login</LinkElement>
+                            </Typography>
+                        </LinkHolder>
+                        <LinkHolder>
+                            <Typography>
+                                <LinkElement href='/auth/signup'>Sign Up</LinkElement>
+                            </Typography>
+                        </LinkHolder>
+                    </Grid>
+                </Grid>
+            </Box>
+            <Sheet 
+            sx={{
+                width: 300,
+                mx: 'auto',
+                my: 4,
+                py: 3,
+                px: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                border: '1px solid #aeaeae',
+                borderRadius: 'sm'
+            }}>
+                <div>
+                <Typography level="h3" component="h1">
+                    Welcome!
+                </Typography>
+                <Typography level='body-md'>Sign in to continue.</Typography> 
+                </div>
+
+                <form onSubmit={(e) => handleSubmit(e)}>
+                <FormControl sx={{ mb: 1 }}>
+                    <FormLabel>Email:</FormLabel>
+                    <Input
+                        name="email"
+                        type="email"
+                        placeholder="Enter email:"
+                        onChange={({ target }) => setCredentials({ ...credentials, email: target.value })}
                         required />
-                </label><br/><br/>
-                <label>
-                    Password:
-                    <input 
-                        type='password' 
-                        placeholder='Enter password...'
-                        onChange={(e) => setCredentials({ ...credentials, password: e.target.value })} 
+                </FormControl>
+                <FormControl sx={{ mb: 1 }}>
+                    <FormLabel>Password:</FormLabel>
+                    <Input
+                        name="password"
+                        type="password"
+                        placeholder="Enter password:"
+                        onChange={({ target }) => setCredentials({ ...credentials, password: target.value })} 
                         required />
-                </label><br/><br/>
-                <input type='submit' />
-            </form>
-            <p>{error}</p>
-        </div>
+                </FormControl>       
+                {(!loading) ? (
+                    <Button type="submit" sx={{ mt: 1 }}>Log in</Button>
+                ) : (
+                    <Button
+                    loading
+                    loadingPosition="end"
+                    endDecorator={<SendIcon />}
+                    variant="solid"
+                    >
+                    Log in
+                    </Button>
+                )}
+                </form>
+
+            <Typography
+                fontSize="sm"
+                sx={{ alignSelf: 'center' }}
+            >
+                {message}      
+            </Typography>
+
+            </Sheet>
+        </CssVarsProvider>
     );
 }
 

@@ -1,13 +1,22 @@
 import { registrationCredentialsValid } from "@/common/utils";
 import { auth } from "@/firebase/clientApp";
-import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
+import { styled, Sheet, CssVarsProvider, Box, Grid, Typography, FormControl, FormLabel, Input, Button } from "@mui/joy";
+import { sendEmailVerification, updateProfile } from "firebase/auth";
 import { NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormEventHandler, useState } from "react";
+import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
+import SendIcon from '@mui/icons-material/Send';
 
 const SignUp: NextPage = (): JSX.Element => {
     const [registration, setRegistration] = useState({ displayName: '', email: '', password: ''});
-    const [error, setError] = useState('');
+    const [message, setMessage] = useState("")
+    const [
+        createUserWithEmailAndPassword,
+        users,
+        loading,
+    ] = useCreateUserWithEmailAndPassword(auth);
 
     const router = useRouter();
 
@@ -16,66 +25,160 @@ const SignUp: NextPage = (): JSX.Element => {
         e.preventDefault();
 
         if(registrationCredentialsValid(registration)) {
-            createUserWithEmailAndPassword(auth, registration.email, registration.password)
+            createUserWithEmailAndPassword(registration.email, registration.password)
                 .then((credentials) => {
                     // Add name
-                    const user = credentials.user;
-                    updateProfile(user, {
-                        displayName: registration.displayName
-                    })
-                        .catch((error) => {
-                            console.log(`Error updating user profile: ${error}`);
-                        });
-                    // Send email verification
-                    sendEmailVerification(user)
-                        .catch((error) => {
-                            console.log(`Error sending email verification: ${error}`);
+                    const user = credentials!.user;
+                    Promise.all([
+                        updateProfile(user, {
+                            displayName: registration.displayName
+                        }),
+                        // Send email verification
+                        sendEmailVerification(user)
+                    ])
+                        .then(() => {
+                            // Push to landing
+                            router.push({
+                                pathname: '/landing',
+                                search: '?status=new-user' 
+                            });
                         })
-                    // Push to landing
-                    router.push({
-                        pathname: '/landing',
-                        search: '?status=new-user' 
-                    });
+                        .catch((error) => {
+                            setMessage('Error updating user profile and sending email verification. Redirecting to landing page in 5 seconds.');
+                            console.log(`Error updating user profile and sending email verification: ${error}`);
+                            setTimeout(() => {
+                                // Push to landing after 5 seconds
+                                router.push({
+                                    pathname: '/landing',
+                                    search: '?status=new-user' 
+                                });
+                            }, 5000);
+                        });
                 })
-                .catch(() => {
-                    setError('Username/password combination does not match! Please try again.');
+                .catch((error) => {
+                    setMessage('UseEmailrname/password combination does not match! Please try again.');
                     console.log(`Error creating user: ${error}`);
                 })
+        } else {
+            setMessage(`
+                Email/password does not meet these requirements:
+                    Name must only contain letters and be longer than 1 character.
+                    Email must be valid. 
+                    Password must be longer than 8 characters.
+            `);
         }
     }
 
+    const LinkElement = styled(Link)(({
+        cursor: 'pointer',
+        textDecoration: 'none',
+        color: '#000',
+    }));
+
+    const LinkHolder = styled(Sheet)(({ theme }) => ({
+        backgroundColor:
+          theme.palette.mode === 'dark' ? theme.palette.background.level1 : '#fff',
+        ...theme.typography["body-md"],
+        padding: theme.spacing(1),
+        textAlign: 'center',
+        color: theme.vars.palette.text.secondary,
+        cursor: 'pointer'
+    }));
+
     return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <h3>Login:</h3>
-                <label>
-                    Full Name:
-                    <input 
-                        type='text' 
-                        placeholder='Enter name...'
-                        onChange={(e) => setRegistration({ ...registration, displayName: e.target.value })} 
-                        required />
-                </label><br/><br/>
-                <label>
-                    Email:
-                    <input 
-                        type='email' 
-                        placeholder='Enter email...'
-                        onChange={(e) => setRegistration({ ...registration, email: e.target.value })} 
-                        required />
-                </label><br/><br/>
-                <label>
-                    Password:
-                    <input 
-                        type='password' 
-                        placeholder='Enter password...'
-                        onChange={(e) => setRegistration({ ...registration, password: e.target.value })} 
-                        required />
-                </label><br/><br/>
-                <input type='submit' />
-            </form>
-            <p>{error}</p>
-        </div>
+        <CssVarsProvider>
+            <Box sx={{ p: 2 }} >
+                <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+                    <Grid xs={6}>
+                        <Typography level="h3">
+                            <LinkElement href='/'>Quran Tracker</LinkElement>
+                        </Typography>
+                    </Grid>
+                    <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row" }}>
+                        <LinkHolder>
+                            <Typography>
+                                <LinkElement href='/auth/login'>Login</LinkElement>
+                            </Typography>
+                        </LinkHolder>
+                        <LinkHolder>
+                            <Typography>
+                                <LinkElement href='/auth/signup'>Sign Up</LinkElement>
+                            </Typography>
+                        </LinkHolder>
+                    </Grid>
+                </Grid>
+            </Box>
+            <Sheet 
+                sx={{
+                    width: 300,
+                    mx: 'auto',
+                    my: 4,
+                    py: 3,
+                    px: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                    border: '1px solid #aeaeae',
+                    borderRadius: 'sm'
+                }}>
+                <div>
+                    <Typography level="h3" component="h1">
+                        Welcome!
+                    </Typography>
+                    <Typography level='body-md'>Sign in to continue.</Typography> 
+                </div>
+
+                <form onSubmit={(e) => handleSubmit(e)}>
+                    <FormControl sx={{ mb: 1 }}>
+                        <FormLabel>Full Name:</FormLabel>
+                        <Input
+                            name="text"
+                            type="text"
+                            placeholder="Enter your full name:"                            
+                            onChange={({ target }) => setRegistration({ ...registration, displayName: target.value })}
+                            required />
+                    </FormControl>
+                    <FormControl sx={{ mb: 1 }}>
+                        <FormLabel>Email:</FormLabel>
+                        <Input
+                            name="email"
+                            type="email"
+                            placeholder="Enter your email:"
+                            onChange={({ target }) => setRegistration({ ...registration, email: target.value })}
+                            required />
+                    </FormControl>
+                    <FormControl sx={{ mb: 1 }}>
+                        <FormLabel>Password:</FormLabel>
+                        <Input
+                            name="password"
+                            type="password"
+                            placeholder="Enter a password:"
+                            onChange={({ target }) => setRegistration({ ...registration, password: target.value })}
+                            required />
+                    </FormControl>   
+                    {(!loading) ? (
+                        <Button type="submit" sx={{ mt: 1 }}>Sign Up</Button>
+                    ) : (
+                        <Button
+                        loading
+                        loadingPosition="end"
+                        endDecorator={<SendIcon />}
+                        variant="solid"
+                        >
+                        Sign Up
+                        </Button>
+                    )}
+                </form>
+
+            <Typography
+                fontSize="sm"
+                sx={{ alignSelf: 'center' }}
+            >
+                {message}      
+            </Typography>
+
+            </Sheet>
+        </CssVarsProvider>
     );
 }
 

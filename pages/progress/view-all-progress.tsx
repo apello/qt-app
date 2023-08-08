@@ -1,31 +1,19 @@
 import { auth, db } from "@/firebase/clientApp";
-import { User, onAuthStateChanged, signOut } from "firebase/auth";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized, sortLogs } from '../../common/utils';
 import { DocumentData, collection, getDocs, orderBy, query } from "firebase/firestore";
 import Header from "@/components/Header";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const ViewProgress: NextPage = (): JSX.Element => {
-    const [user, setUser] = useState<User | null>();
+    const [user, loading, error] = useAuthState(auth);
     const [filterText, setFilterText] = useState('');
     const [searchText, setSearchText] = useState('');
     const [logs, setLogs] = useState<Array<DocumentData>>();
     const [chapterLogs, setChapterLogs] = useState<Array<DocumentData>>();
     const [sortOption, setSortOption] = useState('alphabetical');
-
-    
-    useEffect(() => {
-        const onlisten = onAuthStateChanged(auth, (authUser) => {
-            authUser
-                ? setUser(authUser)
-                : setUser(null);
-        });
-        return () => {
-            onlisten();
-        }
-    },[]);
 
     useEffect(() => {
         const downloadProgressLogs = () => {
@@ -62,7 +50,8 @@ const ViewProgress: NextPage = (): JSX.Element => {
         downloadProgressLogs();
     },[user]);
 
-       
+    if(loading){ return <div>Loading...</div>; }
+    if(error) { return <div>Something went wrong. <Link href='/'>Return home.</Link></div>; }
     if(user) { return (
         <>
             <Header />

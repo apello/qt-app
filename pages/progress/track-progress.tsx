@@ -1,5 +1,4 @@
 import { auth, db } from "@/firebase/clientApp";
-import { User, onAuthStateChanged } from "firebase/auth";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -7,10 +6,10 @@ import { Chapter, ChapterLog, ProgressLog, chapters, get_today, prettyPrintDate 
 import Header from "@/components/Header";
 import { DocumentData, addDoc, collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { useRouter } from "next/router";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const TrackProgress: NextPage = (): JSX.Element => {
-    const [user, setUser] = useState<User | null>();
-    const [filterText, setFilterText] = useState('');
+    const [user, loading, error] = useAuthState(auth);
     const [currentChapterLog, setCurrentChapterLog] = useState<ChapterLog | null>();
     const [previousLog, setPreviousLog] = useState<ProgressLog | null>();
 
@@ -23,17 +22,6 @@ const TrackProgress: NextPage = (): JSX.Element => {
     const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
     const params = (chapter !== null && chapter !== undefined) ? chapterNameToChapter.get(chapter!.toString()) : undefined;
     const [currentChapter, setCurrentChapter] = useState<Chapter | undefined>(params);
-
-    useEffect(() => {
-        const onlisten = onAuthStateChanged(auth, (authUser) => {
-            authUser
-                ? setUser(authUser)
-                : setUser(null);
-        });
-        return () => {
-            onlisten();
-        }
-    },[]);
 
     useEffect(() => {
         const downloadCurrentChapterLog = () => {
@@ -152,6 +140,8 @@ const TrackProgress: NextPage = (): JSX.Element => {
         }
     };
 
+    if(loading){ return <div>Loading...</div>; }
+    if(error) { return <div>Something went wrong. <Link href='/'>Return home.</Link></div>; }
     if(user) { return (
         <>
             <Header />

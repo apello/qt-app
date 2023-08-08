@@ -7,25 +7,16 @@ import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemo
 import { DocumentData, collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import Header from "@/components/Header";
 import { parse } from "path";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const ViewProgress: NextPage = (): JSX.Element => {
-    const [user, setUser] = useState<User | null>();
+    const [user, loading, error] = useAuthState(auth);
     const [logs, setLogs] = useState<Array<DocumentData>>();
 
     // Define these
     const [memorizationLogs, setMemorizationLogs] = useState<any>();
     const [revisionLogs, setRevisionLogs] = useState<any>();
 
-    useEffect(() => {
-        const onlisten = onAuthStateChanged(auth, (authUser) => {
-            authUser
-                ? setUser(authUser)
-                : setUser(null);
-        });
-        return () => {
-            onlisten();
-        }
-    },[]);
 
     useEffect(() => {
         const downloadProgressLogs = () => {
@@ -58,6 +49,8 @@ const ViewProgress: NextPage = (): JSX.Element => {
         }
     },[logs, setMemorizationLogs, setRevisionLogs]);
        
+    if(loading){ return <div>Loading...</div>; }
+    if(error) { return <div>Something went wrong. <Link href='/'>Return home.</Link></div>; }
     if(user) { return (
         <>
             <Header />

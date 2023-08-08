@@ -1,7 +1,5 @@
-
-// All under userId
-
-import { Key, useEffect, useState } from "react";
+import { serverTimestamp } from "firebase/firestore";
+import { Key } from "react";
 
 export interface ChapterLog {
     map(arg0: (chapter: ChapterLog) => (string | ChapterLog)[]): Iterable<readonly [unknown, unknown]> | null | undefined;
@@ -33,7 +31,7 @@ export interface ProgressLog {
 //   const [authUser, setAuthUser] = useState(null);
 
 //   useEffect(() =>{
-//      const unlisten = onAuthStateChanged(
+//      const onlisten = onAuthStateChanged(
 //         authUser => {
 //           authUser
 //             ? setAuthUser(authUser)
@@ -41,7 +39,7 @@ export interface ProgressLog {
 //         },
 //      );
 //      return () => {
-//          unlisten();
+//         onlisten();
 //      }
 //   }, [onAuthStateChanged]);
 
@@ -54,7 +52,11 @@ export const credentialsValid = (credentials: any): boolean => {
 }
 
 export const registrationCredentialsValid = (credentials: any): boolean => {
-  return credentials.displayName !== "" && credentials.email !== "" && credentials.password !== "";
+  return (
+    credentials.displayName.length > 1 
+    && /[^a-zA-Z]/.test(credentials.displayName)
+    && credentials.password.length > 8
+  );
 }
 
 export const prettyPrintDate = (date: any): string => {
@@ -77,7 +79,7 @@ export const amountMemorized = (lastVerseCompleted: number, chapterName: string,
   return ((lastVerseCompleted/verseCount)*100).toFixed(0);
 }
 
-export const get_today = () => new Date();
+export const get_today = () => serverTimestamp;
 
 export const sortLogs = (sortOption: string, logs: Array<ProgressLog>): Array<ProgressLog>  => {
   let sortedLogs: Array<ProgressLog> = [];

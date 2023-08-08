@@ -1,10 +1,11 @@
 'use client';
 
 import { auth } from "@/firebase/clientApp";
-import { Box, Grid, Sheet, Typography, styled } from "@mui/joy";
+import { Box, Button, Grid, Sheet, Typography, styled, useColorScheme } from "@mui/joy";
 import { signOut } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import ModeToggle from "./ModeToggle";
 
 const Header = (): JSX.Element => {
     const router = useRouter();
@@ -18,44 +19,46 @@ const Header = (): JSX.Element => {
             })
     };
 
-    const LinkElement = styled(Link)(({
+    const LinkElement = styled(Link)(({ theme }) => ({
         cursor: 'pointer',
-        textDecoration: 'none',
-        color: '#000',
+        textDecoration: 'none'
     }));
 
     const LinkHolder = styled(Sheet)(({ theme }) => ({
-        backgroundColor:
-          theme.palette.mode === 'dark' ? theme.palette.background.level1 : '#fff',
-        ...theme.typography["body-md"],
+        backgroundColor: theme.palette.background.body,
         padding: theme.spacing(1),
         textAlign: 'center',
         color: theme.vars.palette.text.secondary,
-        cursor: 'pointer'
+    }));
+
+    const Header = styled(Box)(({ theme }) => ({
+        backgroundColor: theme.palette.background.body,
+        ...theme.typography["body-md"],
     }));
 
     return (
-        <Box sx={{ p: 2, borderBottom: '1px solid #aeaeae' }} >
-            <Grid container spacing={2} sx={{ flexGrow: 1, px: 3 }}>
+        <Header sx={{ p: 3 }}>
+            <Grid container spacing={3} sx={{ flexGrow: 1, }}>
                 <Grid xs={6}>
-                    <Typography level="h3">
-                        <LinkElement href='/landing'>Quran Tracker</LinkElement>
-                    </Typography>
+                    <LinkElement href='/landing'>
+                        <Typography level="h3">Quran Tracker</Typography>
+                    </LinkElement>
                 </Grid>
                 <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row" }}>
                     <LinkHolder>
-                        <Typography>
-                            <LinkElement href='/landing'>Home</LinkElement>
-                        </Typography>
+                            <LinkElement href='/landing'>
+                                <Typography>Home</Typography>
+                            </LinkElement>
                     </LinkHolder>
                     <LinkHolder>
-                        <Typography>
-                            <LinkElement href='' onClick={handleSignOut}>Sign Out</LinkElement>
-                        </Typography>
+                        <LinkElement href='' onClick={handleSignOut}>
+                            <Typography>Sign Out</Typography>
+                        </LinkElement>
                     </LinkHolder>
+                    <ModeToggle />
                 </Grid>
             </Grid>
-        </Box>
+        </Header>
     );
 }
 

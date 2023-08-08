@@ -79,7 +79,7 @@ export const amountMemorized = (lastVerseCompleted: number, chapterName: string,
   return ((lastVerseCompleted/verseCount)*100).toFixed(0);
 }
 
-export const get_today = () => serverTimestamp;
+export const get_today = () => new Date();
 
 export const sortLogs = (sortOption: string, logs: Array<ProgressLog>): Array<ProgressLog>  => {
   let sortedLogs: Array<ProgressLog> = [];

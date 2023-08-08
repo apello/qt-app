@@ -52,7 +52,7 @@ const Header = (): JSX.Element => {
                     </LinkHolder>
                     <LinkHolder>
                         <LinkElement href='' onClick={handleSignOut}>
-                            <Typography>Sign Out</Typography>
+                            <Typography>Sign out</Typography>
                         </LinkElement>
                     </LinkHolder>
                     <ModeToggle />

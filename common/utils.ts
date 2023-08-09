@@ -27,25 +27,6 @@ export interface ProgressLog {
     archived: boolean;
 }
 
-// export const useFirebaseAuthentication = (onAuthStateChanged: { (auth: Auth, nextOrObserver: NextOrObserver<User>, error?: ErrorFn | undefined, completed?: CompleteFn | undefined): Unsubscribe; (arg0: (authUser: any) => void): any; }) => {
-//   const [authUser, setAuthUser] = useState(null);
-
-//   useEffect(() =>{
-//      const onlisten = onAuthStateChanged(
-//         authUser => {
-//           authUser
-//             ? setAuthUser(authUser)
-//             : setAuthUser(null);
-//         },
-//      );
-//      return () => {
-//         onlisten();
-//      }
-//   }, [onAuthStateChanged]);
-
-//   return authUser
-// }
-
 // Add more restrictions
 export const credentialsValid = (credentials: any): boolean => {
   return credentials.email !== "" && credentials.password !== "";

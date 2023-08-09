@@ -135,7 +135,7 @@ const AllProgressTable: React.FC<{
                             onChange={(e) => setFilterText(e.target.value)} />
                         <Select 
                             placeholder='Sort by...'
-                            onChange={(_, newValue) => setSortOption(newValue!)}>
+                            onChange={(_, newValue) => setSortOption(newValue!.toString())}>
                             <Option value='alphabetical'>Chapter Name - Alphabetically</Option>
                             <Option value='verseAmount'>Verse Amount Completed</Option>
                             <Option value='memorization'>Reading Type - Memorization</Option>

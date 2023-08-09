@@ -272,7 +272,7 @@ const ProgressForm: React.FC<{
                                 <FormLabel>Type of reading:</FormLabel>
                                 <Select 
                                     placeholder='Choose a reading type:'
-                                    onChange={(_, newValue) => setReadingType(newValue!)}>
+                                    onChange={(_, newValue) => setReadingType(newValue!.toString())}>
                                     <Option value='Memorization'>Memorization</Option>
                                     <Option value='Revision'>Revision</Option>
                                 </Select>
@@ -308,7 +308,7 @@ const ProgressForm: React.FC<{
                                     <FormLabel>Start Verse:</FormLabel>
                                     <Select 
                                         placeholder={`Choose a start verse in ${currentChapter.name}:`}
-                                        onChange={(_, newValue) => setVerseRange({ ...verseRange, startVerse: parseInt(newValue!) })} 
+                                        onChange={(_, newValue) => setVerseRange({ ...verseRange, startVerse: parseInt(newValue!.toString()) })} 
                                         disabled={completed}>
                                         {Array.from(Array(currentChapter.verseCount).keys()).map((verse) => (
                                             <Option key={verse} value={verse+1}>{currentChapter.number}:{verse+1}</Option>
@@ -320,7 +320,7 @@ const ProgressForm: React.FC<{
                                     <FormLabel>End Verse:</FormLabel>
                                     <Select 
                                         placeholder={`Choose a end verse in ${currentChapter.name}:`}
-                                        onChange={(_, newValue) => setVerseRange({ ...verseRange, endVerse: parseInt(newValue!) })} 
+                                        onChange={(_, newValue) => setVerseRange({ ...verseRange, endVerse: parseInt(newValue!.toString()) })} 
                                         disabled={completed}>
                                         {Array.from(Array(currentChapter.verseCount).keys()).map((verse) => (
                                             <Option key={verse} value={verse+1}>{currentChapter.number}:{verse+1}</Option>

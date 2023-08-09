@@ -2,7 +2,7 @@ import { auth } from "@/firebase/clientApp";
 import { Box, Button, CssVarsProvider, FormControl, FormLabel, Grid, Input, Link, Sheet, Typography, styled } from "@mui/joy";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
 import SendIcon from '@mui/icons-material/Send';
 import { credentialsValid } from "@/common/utils";
@@ -17,21 +17,31 @@ const Login: NextPage = (): JSX.Element => {
         signInWithEmailAndPassword,
         user,
         loading,
+        error
     ] = useSignInWithEmailAndPassword(auth);
 
     const router = useRouter();
+
+    // then
+    useEffect(() => {
+        if(!loading && user) {
+            router.push('/landing')
+        }
+    },[loading, router, user]);
+
+    // catch
+    useEffect(() => {
+        if(error) {
+            setMessage('Email/password do not exist! Please try again.');
+            console.log(`Login failed: ${error}`);
+        }
+    },[error]);
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
 
         if(credentialsValid(credentials)) {
             signInWithEmailAndPassword(credentials.email, credentials.password)
-                .then(() => {
-                    router.push('/landing');
-                })
-                .catch(() => {
-                    setMessage('Email/password do not exist! Please try again.');
-                });
         }
     }
 

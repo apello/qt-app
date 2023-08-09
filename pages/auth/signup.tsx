@@ -4,21 +4,63 @@ import { styled, Sheet, CssVarsProvider, Box, Grid, Typography, FormControl, For
 import { sendEmailVerification, updateProfile } from "firebase/auth";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import SendIcon from '@mui/icons-material/Send';
 import AuthHeader from "@/components/AuthHeader";
+import error from "next/error";
 
 const SignUp: NextPage = (): JSX.Element => {
     const [registration, setRegistration] = useState({ displayName: '', email: '', password: ''});
     const [message, setMessage] = useState("")
     const [
         createUserWithEmailAndPassword,
-        users,
+        user,
         loading,
+        error
     ] = useCreateUserWithEmailAndPassword(auth);
 
     const router = useRouter();
+
+    // then
+    useEffect(() => {
+        if(!loading && user) {
+            const registeredUser = user!.user;
+            Promise.all([
+                updateProfile(registeredUser, {
+                    displayName: registration.displayName
+                }),
+                // Send email verification
+                sendEmailVerification(registeredUser)
+            ])
+                .then(() => {
+                    // Push to landing
+                    router.push({
+                        pathname: '/landing',
+                        search: '?status=new-user' 
+                    });
+                })
+                .catch((error) => {
+                    setMessage('Error updating user profile and sending email verification. Redirecting to landing page in 5 seconds.');
+                    console.log(`Error updating user profile and sending email verification: ${error}`);
+                    setTimeout(() => {
+                        // Push to landing after 5 seconds
+                        router.push({
+                            pathname: '/landing',
+                            search: '?status=new-user' 
+                        });
+                    }, 5000);
+                });
+        }
+    },[loading, registration.displayName, router, user]);
+
+    // catch
+    useEffect(() => {
+        if(error) {
+            setMessage('Error registering user! Please try again.');
+            console.log(`Error creating user: ${error}`);
+        }
+    },[error]);
 
     // TODO: Add password requirements and validation for email and name
     const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
@@ -26,39 +68,6 @@ const SignUp: NextPage = (): JSX.Element => {
 
         if(registrationCredentialsValid(registration)) {
             createUserWithEmailAndPassword(registration.email, registration.password)
-                .then((credentials) => {
-                    // Add name
-                    const user = credentials!.user;
-                    Promise.all([
-                        updateProfile(user, {
-                            displayName: registration.displayName
-                        }),
-                        // Send email verification
-                        sendEmailVerification(user)
-                    ])
-                        .then(() => {
-                            // Push to landing
-                            router.push({
-                                pathname: '/landing',
-                                search: '?status=new-user' 
-                            });
-                        })
-                        .catch((error) => {
-                            setMessage('Error updating user profile and sending email verification. Redirecting to landing page in 5 seconds.');
-                            console.log(`Error updating user profile and sending email verification: ${error}`);
-                            setTimeout(() => {
-                                // Push to landing after 5 seconds
-                                router.push({
-                                    pathname: '/landing',
-                                    search: '?status=new-user' 
-                                });
-                            }, 5000);
-                        });
-                })
-                .catch((error) => {
-                    setMessage('UseEmailrname/password combination does not match! Please try again.');
-                    console.log(`Error creating user: ${error}`);
-                })
         } else {
             setMessage(`
                 Email/password does not meet these requirements:

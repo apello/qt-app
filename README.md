@@ -1,8 +1,8 @@
 ## Overview
 
-This is an application that allows users to track memorization and revision of the Holy Qur'an.
+This is an application that allows users to track memorization and revision of the Holy Qur'an. It was made using Next.js, React, TypeScript, and MUI in the front-end, and Google Firebase in the back-end.
 
-## Getting Started
+## Getting Development Environment Ready
 
 First, clone the repo:
 
@@ -22,7 +22,9 @@ Third, install the necessary libraries and dependencies:
 npm install
 ```
 
-Fourth, run the development server:
+Fourth, set up a Google Firebase project and connect the application to the cloud.
+
+Fifth, run the development server:
 
 ```bash
 npm run dev

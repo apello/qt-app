@@ -219,7 +219,7 @@ const OverallProgress: React.FC<{
                     {filteredChapters.map((chapter, index) => (
                         <>
                             <Box 
-                                key={chapter.number + chapter.name} 
+                                key={index + chapter.number + chapter.name} 
                                 sx={{ p: 2 }}>
                                 <Box sx={{ display: 'flex', alignContent: 'center' }}>
                                     <Typography level='title-lg'>{chapter.number}. {chapter.name}</Typography>

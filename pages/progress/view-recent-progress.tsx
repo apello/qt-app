@@ -1,13 +1,16 @@
 import { auth, db } from "@/firebase/clientApp";
 import { User, onAuthStateChanged, signOut } from "firebase/auth";
 import { NextPage } from "next";
-import Link from "next/link";
+import NextLink from "next/link";
 import { useEffect, useState } from "react";
 import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized } from '../../common/utils';
 import { DocumentData, collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import Header from "@/components/Header";
 import { parse } from "path";
 import { useAuthState } from "react-firebase-hooks/auth";
+import ErrorPage from "@/components/ErrorPage";
+import LoadingPage from "@/components/LoadingPage";
+import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet } from "@mui/joy";
 
 const ViewProgress: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);
@@ -49,95 +52,124 @@ const ViewProgress: NextPage = (): JSX.Element => {
         }
     },[logs, setMemorizationLogs, setRevisionLogs]);
        
-    if(loading){ return <div>Loading...</div>; }
-    if(error) { return <div>Something went wrong. <Link href='/'>Return home.</Link></div>; }
-    if(user) { return (
-        <>
-            <Header />
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                <div style={{ padding: '20px'}}>
-                    <h5><Link href='/landing'>Home</Link>/View Progress</h5>
-                    <h1>Recent Progress</h1>
+    if(loading){ return <LoadingPage /> }
+    if(error) { return <ErrorPage /> }
+    return (
+        <CssVarsProvider>
+            {(user) ? (
+                <Box>
+                    <Header />
+                    <Container sx={{ mt: 3, mb: 5 }}>
+                        <Box sx={{ mb: 2 }}>
+                            <Breadcrumbs sx={{ px: 0 }}>
+                                <Typography level='title-sm'>
+                                    <NextLink href="/landing">Home</NextLink>
+                                </Typography>
+                                <Typography level='title-sm'>View Progress</Typography>
+                            </Breadcrumbs>
+                            <Typography level='h1' sx={{ mb: 1 }}>Recent Progress</Typography>
+                            <Typography level='title-sm'>
+                            View the last 15 logs you memorized/revised.                            
+                            </Typography>
+                        </Box>
+                        
+                        <ButtonGroup sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+                            <Button variant='soft' sx={{ cursor: 'default' }}>
+                                <Typography>Recent Progress</Typography>
+                            </Button>
+                            <Button>
+                                <NextLink href='/progress/view-all-progress'>
+                                    <Link overlay>
+                                        <Typography>All Progress</Typography>
+                                    </Link>
+                                </NextLink>
+                            </Button>
+                        </ButtonGroup>
 
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <p style={{ border: '1px solid black', padding: '5px' }}>Recent Progress</p>
-                        <p style={{ border: '1px solid black', padding: '5px' }}><Link href='/progress/view-all-progress'>All Progress</Link></p>
-                    </div>
-
-                    <h4>View the last 15 logs you memorized/revised.</h4>
-
-                    <RecentProgressTable
-                        memorizationLogs={memorizationLogs}
-                        revisionLogs={revisionLogs} />
-                </div>
-            </div>
-        </>
-    )} else {
-        return <div>You do not have access to this page. <Link href='/'>Return home.</Link></div>;
-    }
+                        <RecentProgressTable
+                            memorizationLogs={memorizationLogs}
+                            revisionLogs={revisionLogs} />
+                    </Container>
+                </Box>
+            ) : ( 
+                <Typography sx={{ p: 2 }}>You do not have access to this page. <Link href='/'>Return home.</Link></Typography>
+            )}
+        </CssVarsProvider>
+    );
 }
 
 
 const RecentProgressTable: React.FC<{ memorizationLogs: any, revisionLogs: any }> = ({ memorizationLogs, revisionLogs }) => {
     return (
-        <>
+        <Box>
             {(memorizationLogs !== undefined) ? (
-                <> 
-                    <h3>Memorization</h3>
-                    <table style={{ border: '1px solid black' }}>
-                        <thead>
-                            <tr>
-                                <th style={{ border: '1px solid black' }}>Chapter Name</th>
-                                <th style={{ border: '1px solid black' }}>Amount Completed</th>
-                                <th style={{ border: '1px solid black' }}>Verse Range</th>
-                                <th style={{ border: '1px solid black' }}>Log Date</th>
-                            </tr>
-                        </thead>
-
+                <Sheet sx={{ p: 3, borderRadius: '10px', my: 2 }} variant='outlined'> 
+                    <Typography level="h4">Memorization</Typography>
+                    <Table sx={{ my: 2 }} borderAxis='bothBetween'>
                         {(memorizationLogs!.length > 0) ? (
-                            <tbody>
-                                {memorizationLogs.map((log: ProgressLog) => (
-                                    <tr key={log.id}>
-                                        <td style={{ border: '1px solid black' }}>{log.data.chapterNumber}. {log.data.chapterName}</td>
-                                        <td style={{ border: '1px solid black' }}>{log.data.verseAmount} verses</td>
-                                        <td style={{ border: '1px solid black' }}>{log.data.chapterNumber}:{log.data.startVerse} -  {log.data.chapterNumber}:{log.data.endVerse}</td>
-                                        <td style={{ border: '1px solid black' }}>{prettyPrintDate(log.data.createdAt)}</td>
+                            <>
+                                <thead>
+                                    <tr>
+                                        <th>Chapter Name</th>
+                                        <th>Amount Completed</th>
+                                        <th>Verse Range</th>
+                                        <th>Log Date</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        ) : ( <p style={{ textAlign: 'center' }}>No recent memorization logs.</p> )}
-                        </table>
-                </>
-            ) : ( <>Loading...</> )}  
+                                </thead>
+                                <tbody>
+                                    {memorizationLogs.map((log: ProgressLog) => (
+                                        <tr key={log.id}>
+                                            <td>{log.data.chapterNumber}. {log.data.chapterName}</td>
+                                            <td>{log.data.verseAmount} verses</td>
+                                            <td>{log.data.chapterNumber}:{log.data.startVerse} -  {log.data.chapterNumber}:{log.data.endVerse}</td>
+                                            <td>{prettyPrintDate(log.data.createdAt)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </>
+                        ) : ( 
+                            <Box sx={{ p:2, textAlign: 'center' }}>
+                                <Typography>No recent memorization logs.</Typography>
+                            </Box>
+                        )}
+                    </Table>
+                </Sheet>
+            ) : ( <Typography sx={{ p: 2 }}>Loading...</Typography> )}  
 
             {(revisionLogs !== undefined) ? (
-                <> 
-                    <h3>Revision</h3>
-                    <table style={{ border: '1px solid black' }}>
-                        <thead>
-                            <tr>
-                                <th style={{ border: '1px solid black' }}>Chapter Name</th>
-                                <th style={{ border: '1px solid black' }}>Amount Completed</th>
-                                <th style={{ border: '1px solid black' }}>Verse Range</th>
-                                <th style={{ border: '1px solid black' }}>Log Date</th>
-                            </tr>
-                        </thead>
+                <Sheet sx={{ p: 3, borderRadius: '10px', my: 2 }} variant='outlined'> 
+                    <Typography level="h4">Revision</Typography>
+                    <Table sx={{ my: 2 }} borderAxis='bothBetween'>
                         {(revisionLogs!.length > 0) ? (
-                            <tbody>
-                                {revisionLogs.map((log: ProgressLog) => (
-                                    <tr key={log.id}>
-                                        <td style={{ border: '1px solid black' }}>{log.data.chapterNumber}. {log.data.chapterName}</td>
-                                        <td style={{ border: '1px solid black' }}>{log.data.verseAmount} verses</td>
-                                        <td style={{ border: '1px solid black' }}>{log.data.chapterNumber}:{log.data.startVerse} -  {log.data.chapterNumber}:{log.data.endVerse}</td>
-                                        <td style={{ border: '1px solid black' }}>{prettyPrintDate(log.data.createdAt)}</td>
+                            <>
+                                <thead>
+                                    <tr>
+                                        <th>Chapter Name</th>
+                                        <th>Amount Completed</th>
+                                        <th>Verse Range</th>
+                                        <th>Log Date</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        ) : ( <p style={{ textAlign: 'center' }}>No recent revision logs.</p> )}
-                    </table>
-                </>
-            ) : ( <>Loading...</> )}  
-        </>
+                                </thead>
+                                <tbody>
+                                    {revisionLogs.map((log: ProgressLog) => (
+                                        <tr key={log.id}>
+                                            <td>{log.data.chapterNumber}. {log.data.chapterName}</td>
+                                            <td>{log.data.verseAmount} verses</td>
+                                            <td>{log.data.chapterNumber}:{log.data.startVerse} -  {log.data.chapterNumber}:{log.data.endVerse}</td>
+                                            <td>{prettyPrintDate(log.data.createdAt)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </>
+                        ) : ( 
+                            <Box sx={{ p:2, textAlign: 'center' }}>
+                                <Typography>No recent revision logs.</Typography>
+                            </Box>
+                        )}
+                    </Table>
+                </Sheet>
+            ) : ( <Typography sx={{ p: 2 }}>Loading...</Typography> )}  
+        </Box>
     );
 }
 

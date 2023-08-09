@@ -21,7 +21,10 @@ const Header = (): JSX.Element => {
 
     const LinkElement = styled(Link)(({ theme }) => ({
         cursor: 'pointer',
-        textDecoration: 'none'
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'underline',
+        },
     }));
 
     const LinkHolder = styled(Sheet)(({ theme }) => ({

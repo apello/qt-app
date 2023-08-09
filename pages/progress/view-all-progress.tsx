@@ -1,11 +1,14 @@
 import { auth, db } from "@/firebase/clientApp";
 import { NextPage } from "next";
-import Link from "next/link";
+import NextLink from "next/link";
 import { useEffect, useState } from "react";
 import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized, sortLogs } from '../../common/utils';
 import { DocumentData, collection, getDocs, orderBy, query } from "firebase/firestore";
 import Header from "@/components/Header";
 import { useAuthState } from "react-firebase-hooks/auth";
+import ErrorPage from "@/components/ErrorPage";
+import LoadingPage from "@/components/LoadingPage";
+import { CssVarsProvider, Box, Container, Breadcrumbs, Typography, ButtonGroup, Button, Link, Table, Sheet, Input, Select, Option, Card, Divider, Chip, styled, LinearProgress, Grid } from "@mui/joy";
 
 const ViewProgress: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);
@@ -49,41 +52,61 @@ const ViewProgress: NextPage = (): JSX.Element => {
         downloadChapterLogs();
         downloadProgressLogs();
     },[user]);
+    
+    if(loading){ return <LoadingPage /> }
+    if(error) { return <ErrorPage /> }
+    return (
+        <CssVarsProvider>
+            {(user) ? (
+                <Box>
+                    <Header />
+                    <Container sx={{ mt: 3, mb: 5 }}>
+                        <Box sx={{ mb: 2 }}>
+                            <Breadcrumbs sx={{ px: 0 }}>
+                                <Typography level='title-sm'>
+                                    <NextLink href="/landing">Home</NextLink>
+                                </Typography>
+                                <Typography level='title-sm'>View Progress</Typography>
+                            </Breadcrumbs>
+                            <Typography level='h1' sx={{ mb: 1 }}>All Progress</Typography>
+                            <Typography level='title-sm'>
+                            View all progress logs of memorization/revision.
+                            </Typography>
+                        </Box>
+                        
+                        <ButtonGroup sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+                            <Button>
+                                <NextLink href='/progress/view-recent-progress'>
+                                    <Link overlay>
+                                        <Typography>Recent Progress</Typography>
+                                    </Link>
+                                </NextLink>
+                            </Button>
+                            <Button variant='soft' sx={{ cursor: 'default' }}>
+                                <Typography>All Progress</Typography>
+                            </Button>
+                        </ButtonGroup>
+                        
+                        <Grid container sx={{ gap: 2, p: 0, m: 0 }}>
+                            <AllProgressTable 
+                                logs={logs ?? []}
+                                filterText={filterText}
+                                setFilterText={setFilterText} 
+                                setSortOption={setSortOption}
+                                sortOption={sortOption} /> 
 
-    if(loading){ return <div>Loading...</div>; }
-    if(error) { return <div>Something went wrong. <Link href='/'>Return home.</Link></div>; }
-    if(user) { return (
-        <>
-            <Header />
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignContent: 'center' }}>
-                <div style={{ padding: '20px'}}>
-                    <h5><Link href='/landing'>Home</Link>/View Progress</h5>
-                    <h1>All Progress</h1>
-
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <p style={{ border: '1px solid black', padding: '5px' }}><Link href='/progress/view-recent-progress'>Recent Progress</Link></p>
-                        <p style={{ border: '1px solid black', padding: '5px' }}>All Progress</p>
-                    </div>
-
-                    <h4>View all progress logs of memorization/revision.</h4>
-
-                    <AllProgressTable 
-                        logs={logs ?? []}
-                        filterText={filterText}
-                        setFilterText={setFilterText} 
-                        setSortOption={setSortOption}
-                        sortOption={sortOption} /> 
-                </div>
-
-                <OverallProgress   
-                    setSearchText={setSearchText}
-                    searchText={searchText}
-                    chapterLogs={chapterLogs ?? []} />
-            </div>
-        </>
-    )} else {
-        return <div>You do not have access to this page. <Link href='/'>Return home.</Link></div>;
-    }
+                            <OverallProgress   
+                                setSearchText={setSearchText}
+                                searchText={searchText}
+                                chapterLogs={chapterLogs ?? []} />
+                        </Grid>
+                    </Container>
+                </Box>
+            ) : ( 
+                <Typography sx={{ p: 2 }}>You do not have access to this page. <Link href='/'>Return home.</Link></Typography>
+            )}
+        </CssVarsProvider>
+    );
 }
 
 const AllProgressTable: React.FC<{ 
@@ -101,53 +124,58 @@ const AllProgressTable: React.FC<{
     const sortedLogs = sortLogs(sortOption, filteredLogs);
     
     return (
-        <>
+        <Grid sm={12} md={7.5}>
             {(parsedLogs !== undefined) ? (
-                <> 
-                    <div style={{ display: 'flex', padding: '5px', boxSizing: 'border-box', gap: '15px', }}>
-                        <p>{sortedLogs.length} logs</p>
-                        <input 
+                <Sheet sx={{ p: 3, borderRadius: '10px' }} variant='outlined'> 
+                    <Box sx={{ display: 'flex', py: 2,  gap: 3 }}>
+                        <Input 
                             type='text'
-                            placeholder='Search by chapter name...'
+                            placeholder='Search by chapter name:'
                             value={filterText}
                             onChange={(e) => setFilterText(e.target.value)} />
-                        <select onChange={(e) => setSortOption(e.currentTarget.value)}>
-                            <option disabled>Sort by:</option>
-                            <option value='alphabetical'>Chapter Name - Alphabetically</option>
-                            <option value='verseAmount'>Verse Amount Completed</option>
-                            <option value='memorization'>Reading Type - Memorization</option>
-                            <option value='revision'>Reading Type - Revision</option>
-                            <option value='createdAt'>Log Date</option>
-                        </select>
-                    </div>
-                    <table style={{ border: '1px solid black' }}>
-                        <thead>
-                            <tr>
-                                <th style={{ border: '1px solid black' }}>Chapter Name</th>
-                                <th style={{ border: '1px solid black' }}>Amount Completed</th>
-                                <th style={{ border: '1px solid black' }}>Verse Range</th>
-                                <th style={{ border: '1px solid black' }}>Reading Type</th>
-                                <th style={{ border: '1px solid black' }}>Log Date</th>
-                            </tr>
-                        </thead>
-
+                        <Select 
+                            placeholder='Sort by...'
+                            onChange={(_, newValue) => setSortOption(newValue!)}>
+                            <Option value='alphabetical'>Chapter Name - Alphabetically</Option>
+                            <Option value='verseAmount'>Verse Amount Completed</Option>
+                            <Option value='memorization'>Reading Type - Memorization</Option>
+                            <Option value='revision'>Reading Type - Revision</Option>
+                            <Option value='createdAt'>Log Date</Option>
+                        </Select>
+                    </Box>
+                    <Table sx={{ my: 2 }} borderAxis='bothBetween'>
                         {(sortedLogs!.length > 0) ? (
-                            <tbody>
-                                {sortedLogs.map((log: ProgressLog) => (
-                                    <tr key={log.id}>
-                                        <td style={{ border: '1px solid black' }}>{log.data.chapterNumber}. {log.data.chapterName}</td>
-                                        <td style={{ border: '1px solid black' }}>{log.data.verseAmount} verses</td>
-                                        <td style={{ border: '1px solid black' }}>{log.data.chapterNumber}:{log.data.startVerse} -  {log.data.chapterNumber}:{log.data.endVerse}</td>
-                                        <td style={{ border: '1px solid black' }}>{log.data.readingType}</td>
-                                        <td style={{ border: '1px solid black' }}>{prettyPrintDate(log.data.createdAt)}</td>
+                            <>
+                                <thead>
+                                    <tr>
+                                        <th>Chapter Name</th>
+                                        <th>Amount Completed</th>
+                                        <th>Verse Range</th>
+                                        <th>Reading Type</th>
+                                        <th>Log Date</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        ) : ( <p style={{ textAlign: 'center' }}>No logs.</p> )}
-                        </table>
-                </>
-            ) : ( <>Loading...</> )}  
-        </>
+                                </thead>
+                                <tbody>
+                                    {sortedLogs.map((log: ProgressLog) => (
+                                        <tr key={log.id}>
+                                            <td>{log.data.chapterNumber}. {log.data.chapterName}</td>
+                                            <td>{log.data.verseAmount} verses</td>
+                                            <td>{log.data.chapterNumber}:{log.data.startVerse} -  {log.data.chapterNumber}:{log.data.endVerse}</td>
+                                            <td>{log.data.readingType}</td>
+                                            <td>{prettyPrintDate(log.data.createdAt)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </>
+                        ) : ( 
+                            <Box sx={{ p:2, textAlign: 'center' }}>
+                                <Typography>No logs.</Typography>
+                            </Box>
+                        )}
+                    </Table>
+                </Sheet>
+            ) : ( <Typography sx={{ p: 2 }}>Loading...</Typography> )}  
+        </Grid>
     );
 };
 
@@ -166,50 +194,80 @@ const OverallProgress: React.FC<{
     const chapterNameToChapterLog = new Map(parsedChapterLogs.map((chapter: ChapterLog) => [chapter.name, chapter]));
     const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
 
+    const LinkElement = styled(Link)(({ theme }) => ({
+        cursor: 'pointer',
+        textDecoration: 'none',
+        '&:hover': {
+            textDecoration: 'none',
+        },
+    }));
+
     return (
-        <div style={{ padding: '20px' }}>
-            <div style={{ border: '1px solid black', padding: '10px'}}>
-                <h3>Overall Progress</h3>
-            </div>
+        <Grid xs={12} md={4}>
+            <Card variant='outlined' sx={{ boxShadow: 'none', maxHeight: '90vh' }}>
+                <Box sx={{ py: 2 }}>
+                    <Typography level='h2' sx={{ mb: 2 }}>Overall Progress</Typography>
+                    <Input 
+                        type='text' 
+                        placeholder='Search chapters here:'
+                        onChange={e => setSearchText(e.target.value)} />
+                </Box>
 
-            <div style={{ border: '1px solid black', padding: '10px'}}>
-                <input 
-                    type='text' 
-                    placeholder='Search chapters here:'
-                    onChange={e => setSearchText(e.target.value)} />
-                <p>{filteredChapters.length} result(s)</p>
-            </div>
+                <Divider />
 
-            <div style={{ maxHeight: '90vh', overflow: 'scroll', border: '1px solid black' }}>
-                {filteredChapters.map((chapter) => (
-                    <div key={chapter.number + chapter.name} style={{ borderBottom: '1px solid black', padding: '10px'}}>
-                        <div style={{ display: 'flex', alignContent: 'center' }}>
-                            <h3>{chapter.number}. {chapter.name}</h3>
-                            <p style={{ paddingLeft: '5px'}}>
-                                <Link 
-                                    href={{
-                                        pathname:"track-progress",
-                                        query: {
-                                            chapter: chapter.name
-                                        }
-                                    }}
-                                >Track Progress</Link>
-                            </p>
-                        </div>
-                        <h5>
-                            {(chapterNameToChapterLog.get(chapter.name) !== undefined ? (
-                                'Last reviewed: ' + prettyPrintDate(chapterNameToChapterLog.get(chapter.name)!.lastReviewed) // Create lastReviewedDate for specific data on days and weeks
-                            ) : ( 'Never reviewed' ))}
-                        </h5>
-                        <h6>
-                            {(chapterNameToChapterLog.get(chapter.name) !== undefined ? (
-                                amountMemorized(chapterNameToChapterLog.get(chapter.name)!.lastVerseCompleted, chapter.name, chapterNameToChapter) + '% memorized'
-                            ) : ( '' ))}
-                        </h6>
-                    </div>
-                ))}
-            </div>
-        </div>
+                <Box sx={{ overflow: 'scroll', p: 0 }}>
+                    {filteredChapters.map((chapter, index) => (
+                        <>
+                            <Box 
+                                key={chapter.number + chapter.name} 
+                                sx={{ p: 2 }}>
+                                <Box sx={{ display: 'flex', alignContent: 'center' }}>
+                                    <Typography level='title-lg'>{chapter.number}. {chapter.name}</Typography>
+                                    <Chip
+                                        variant="soft"
+                                        sx={{ ml: 1 }}>
+                                        <NextLink 
+                                            href={{
+                                                pathname:"track-progress",
+                                                query: {
+                                                    chapter: chapter.name
+                                                }
+                                            }}
+                                        >
+                                            <LinkElement overlay>Track Progress</LinkElement>
+                                        </NextLink>
+                                    </Chip>
+                                </Box>
+                                <Typography level='title-sm' sx={{ mt: 2 }}>
+                                    {(chapterNameToChapterLog.get(chapter.name) !== undefined ? (
+                                        'Last reviewed: ' + prettyPrintDate(chapterNameToChapterLog.get(chapter.name)!.lastReviewed)  // Create lastReviewedDate for specific data on days and weeks
+                                    ) : ( 'Never reviewed' ))}
+                                </Typography>
+
+                                {(chapterNameToChapterLog.get(chapter.name) !== undefined ? (
+                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3, py: 2, boxSizing: 'border-box' }}>
+                                        <LinearProgress 
+                                            determinate 
+                                            value={
+                                                parseInt(amountMemorized(chapterNameToChapterLog.get(chapter.name)!.lastVerseCompleted, chapter.name, chapterNameToChapter))
+                                        } />
+
+                                        <Typography level='title-sm'>
+                                            {amountMemorized(chapterNameToChapterLog.get(chapter.name)!.lastVerseCompleted, chapter.name, chapterNameToChapter)+ '% memorized'}
+                                        </Typography>
+                                    </Box>
+
+                                ) : ( '' ))}
+                                
+                                
+                            </Box>
+                            {(index !== filteredChapters.length-1) ? <Divider /> : <></> }
+                        </>
+
+                    ))}
+                </Box>
+            </Card>
+        </Grid>
     );
 }
 

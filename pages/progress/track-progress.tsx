@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ErrorPage from "@/components/ErrorPage";
 import LoadingPage from "@/components/LoadingPage";
-import { CssVarsProvider, Box, Typography, Container, Alert, IconButton, Breadcrumbs, Select, Option, Sheet, Card, Divider, FormControl, FormLabel, Button } from "@mui/joy";
+import { CssVarsProvider, Box, Typography, Container, Alert, IconButton, Breadcrumbs, Select, Option, Sheet, Card, Divider, FormControl, FormLabel, Button, Grid } from "@mui/joy";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const TrackProgress: NextPage = (): JSX.Element => {
@@ -18,7 +18,7 @@ const TrackProgress: NextPage = (): JSX.Element => {
     const [previousLog, setPreviousLog] = useState<ProgressLog | null>();
 
     const [verseRange, setVerseRange] = useState({ startVerse: 1, endVerse: 1 });
-    const [readingType, setReadingType] = useState<string>('Memorization');
+    const [readingType, setReadingType] = useState<string>('');
     const [completed, setCompleted] = useState(false);
     const [alert, setAlert] = useState<JSX.Element>();
     const [openAlert, setOpenAlert] = useState(false);
@@ -197,12 +197,13 @@ const TrackProgress: NextPage = (): JSX.Element => {
                             completed={completed}
                             previousLog={previousLog}
                             setVerseRange={setVerseRange}
-                            verseRange={verseRange} />
+                            verseRange={verseRange}
+                            readingType={readingType} />
 
                     </Container>
                 </Box>
             ) : ( 
-                <Typography>You do not have access to this page. <Link href='/'>Return home.</Link></Typography>
+                <Typography sx={{ p: 2 }}>You do not have access to this page. <Link href='/'>Return home.</Link></Typography>
             )}
         </CssVarsProvider>
     );
@@ -218,7 +219,8 @@ const ProgressForm: React.FC<{
     completed: boolean,
     previousLog: ProgressLog | null | undefined,
     setVerseRange: (_: any) => void,
-    verseRange: { startVerse: number; endVerse: number; }
+    verseRange: { startVerse: number; endVerse: number; },
+    readingType: string
 }> = ({
     handleForm,
     handleChapterSearch,
@@ -228,7 +230,8 @@ const ProgressForm: React.FC<{
     completed,
     previousLog,
     setVerseRange,
-    verseRange
+    verseRange,
+    readingType
 }) => {
     const chapterOptions = chapters.map((chapter) => {
         return <Option key={chapter.number} value={chapter.name}>{chapter.number}. {chapter.name}</Option>
@@ -241,55 +244,57 @@ const ProgressForm: React.FC<{
                 <Option value='challenge' disabled>Challenge Progress</Option>
             </Select>
 
-            <Card sx={{ width: '500px' }}>
-                <Box sx={{ py: 1 }}>
+            <Grid container>
+                <Grid xs={12} md={6}>
+                    <Card>
+                    <Box sx={{ py: 1 }}>
 
-                    {/* Autocomplete search */}
-                    {/* <input
-                        type='text'
-                        placeholder='Search for chapter to begin...'
-                        value={filterText}
-                        onChange={(e) => setFilterText(e.target.value)} /> */}
+                        {/* Autocomplete search */}
+                        {/* <input
+                            type='text'
+                            placeholder='Search for chapter to begin...'
+                            value={filterText}
+                            onChange={(e) => setFilterText(e.target.value)} /> */}
 
-                    <Select 
-                        onChange={(_, newValue) => handleChapterSearch(newValue)} 
-                        value={(currentChapter !== null && currentChapter !== undefined) ? currentChapter!.name : ''}
-                        placeholder='Select a chapter...'>
-                        <>{chapterOptions}</>
-                    </Select>
-                </Box>
+                        <Select 
+                            onChange={(_, newValue) => handleChapterSearch(newValue)} 
+                            value={(currentChapter !== null && currentChapter !== undefined) ? currentChapter!.name : ''}
+                            placeholder='Select a chapter...'>
+                            <>{chapterOptions}</>
+                        </Select>
+                    </Box>
 
-                <Divider />
+                    <Divider />
 
-                {(currentChapter !== null && currentChapter !== undefined) ? (
-                    <div>
-                        <FormControl sx={{ pb: 2 }}>
-                            <FormLabel>Type of reading:</FormLabel>
-                            <Select onChange={(_, newValue) => setReadingType(newValue!)}>
-                                <Option value='Memorization'>Memorization</Option>
-                                <Option value='Revision'>Revision</Option>
-                            </Select>
-                        </FormControl>
-                        <Divider />
-
-
-                        <Box sx={{ display: 'flex', gap: 2, py: 2}}>
-                            <Button 
-                                color='neutral'
-                                variant={(completed) ? 'solid' : 'outlined'}
-                                onClick={() => setCompleted(!completed)}>
-                                    I completed this chapter
-                            </Button>
-                            <Typography level='title-sm' sx={{ mt: 1 }}>or...</Typography>
-                        </Box>
-
-                        <Divider />
-
-
+                    {(currentChapter !== null && currentChapter !== undefined) ? (
                         <div>
+                            <FormControl sx={{ pb: 2 }}>
+                                <FormLabel>Type of reading:</FormLabel>
+                                <Select 
+                                    placeholder='Choose a reading type:'
+                                    onChange={(_, newValue) => setReadingType(newValue!)}>
+                                    <Option value='Memorization'>Memorization</Option>
+                                    <Option value='Revision'>Revision</Option>
+                                </Select>
+                            </FormControl>
 
+                            <Divider />
+
+                            <Box sx={{ display: 'flex', gap: 2, py: 2}}>
+                                <Button 
+                                    color='neutral'
+                                    variant={(completed) ? 'solid' : 'outlined'}
+                                    onClick={() => setCompleted(!completed)}>
+                                        I completed this chapter
+                                </Button>
+                                <Typography level='title-sm' sx={{ mt: 1 }}>or...</Typography>
+                            </Box>
+
+                            <Divider />
+
+                            <Box sx={{ my: 2 }} >
                                 {(previousLog !== undefined && previousLog !== null) ? (    
-                                    <Card sx={{ border: 1, borderColor: '#bdbdbd', boxShadow: 'none', my: 2 }}>
+                                    <Card sx={{ border: 1, borderColor: '#bdbdbd', boxShadow: 'none', mb: 2  }}>
                                         <Typography level='title-sm'>
                                         Previous Log for {currentChapter.name}: {' '}
                                         {previousLog.chapterNumber}:{previousLog.startVerse} - {previousLog.chapterNumber}:{previousLog.endVerse}  {' '}
@@ -299,29 +304,29 @@ const ProgressForm: React.FC<{
                                 ) : ( <></> )}
 
 
-                                    <FormControl sx={{ pb: 2 }}>
-                                        <FormLabel>Start Verse:</FormLabel>
-                                        <Select 
-                                            placeholder={`Choose a start verse in ${currentChapter.name}:`}
-                                            onChange={(_, newValue) => setVerseRange({ ...verseRange, startVerse: parseInt(newValue!) })} 
-                                            disabled={completed}>
-                                            {Array.from(Array(currentChapter.verseCount).keys()).map((verse) => (
-                                                <Option key={verse} value={verse+1}>{currentChapter.number}:{verse+1}</Option>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
+                                <FormControl sx={{ pb: 2 }}>
+                                    <FormLabel>Start Verse:</FormLabel>
+                                    <Select 
+                                        placeholder={`Choose a start verse in ${currentChapter.name}:`}
+                                        onChange={(_, newValue) => setVerseRange({ ...verseRange, startVerse: parseInt(newValue!) })} 
+                                        disabled={completed}>
+                                        {Array.from(Array(currentChapter.verseCount).keys()).map((verse) => (
+                                            <Option key={verse} value={verse+1}>{currentChapter.number}:{verse+1}</Option>
+                                        ))}
+                                    </Select>
+                                </FormControl>
 
-                                    <FormControl sx={{ pb: 2 }}>
-                                        <FormLabel>End Verse:</FormLabel>
-                                        <Select 
-                                            placeholder={`Choose a end verse in ${currentChapter.name}:`}
-                                            onChange={(_, newValue) => setVerseRange({ ...verseRange, endVerse: parseInt(newValue!) })} 
-                                            disabled={completed}>
-                                            {Array.from(Array(currentChapter.verseCount).keys()).map((verse) => (
-                                                <Option key={verse} value={verse+1}>{currentChapter.number}:{verse+1}</Option>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
+                                <FormControl sx={{ pb: 2 }}>
+                                    <FormLabel>End Verse:</FormLabel>
+                                    <Select 
+                                        placeholder={`Choose a end verse in ${currentChapter.name}:`}
+                                        onChange={(_, newValue) => setVerseRange({ ...verseRange, endVerse: parseInt(newValue!) })} 
+                                        disabled={completed}>
+                                        {Array.from(Array(currentChapter.verseCount).keys()).map((verse) => (
+                                            <Option key={verse} value={verse+1}>{currentChapter.number}:{verse+1}</Option>
+                                        ))}
+                                    </Select>
+                                </FormControl>
             
                                 
 
@@ -335,14 +340,18 @@ const ProgressForm: React.FC<{
                                             verseRange.startVerse > verseRange.endVerse
                                             || ((verseRange.startVerse === 1 && verseRange.endVerse === 1) 
                                                 && !completed)
+                                            || readingType === ''
                                         }>
                                         Log Progress
                                     </Button>  
                                 </Box> 
+                            </Box>
                         </div>
-                    </div>
-                ):( <Typography sx={{ padding: '20px', textAlign: 'center'}}>Select a chapter to begin.</Typography> )}
-            </Card>
+                    ) : ( <Typography sx={{ padding: '20px', textAlign: 'center' }}>Select a chapter to begin.</Typography> )}
+                    </Card>
+                </Grid>
+            </Grid>
+            
         </Box>
     )
 }

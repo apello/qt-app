@@ -18,7 +18,7 @@ export default function TwoSidedLayout({
         display: 'flex',
         flexDirection: reversed ? 'column-reverse' : 'column',
         alignItems: 'center',
-        py: 10,
+        py: 5,
         gap: 4,
         [theme.breakpoints.up(834)]: {
           flexDirection: 'row',

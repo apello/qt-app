@@ -98,7 +98,7 @@ const Landing: NextPage = (): JSX.Element => {
                     </Container>
                 </Box>
             ) : ( 
-                <Typography>You do not have access to this page. <Link href='/'>Return home.</Link></Typography>
+                <Typography sx={{ p: 2 }}>You do not have access to this page. <Link href='/'>Return home.</Link></Typography>
             )}
         </CssVarsProvider>
     );

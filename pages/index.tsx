@@ -22,13 +22,11 @@ const Home: NextPage = (): JSX.Element => {
     const LinkElement = styled(Link)(({
         cursor: 'pointer',
         textDecoration: 'none',
-        color: '#000',
         '&:hover': {
             textDecoration: 'underline',
         },
     }));
     
-
     return (
         <CssVarsProvider>
             <Box sx={{ p: 3, boxSizing: 'border-box' }} >

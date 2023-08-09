@@ -1,3 +1,5 @@
+## Overview
+
 This is an application that allows users to track memorization and revision of the Holy Qur'an.
 
 ## Getting Started
@@ -8,13 +10,19 @@ First, clone the repo:
 git clone https://github.com/apello/qt-app.git
 ```
 
-Second, install the necessary libraries and dependencies:
+Second, navigate into the qt-app folder:
+
+```bash
+cd qt-app
+```
+
+Third, install the necessary libraries and dependencies:
 
 ```bash
 npm install
 ```
 
-Third, run the development server:
+Fourth, run the development server:
 
 ```bash
 npm run dev

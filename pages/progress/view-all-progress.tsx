@@ -127,7 +127,7 @@ const AllProgressTable: React.FC<{
         <Grid sm={12} md={7.5}>
             {(parsedLogs !== undefined) ? (
                 <Sheet sx={{ p: 3, borderRadius: '10px' }} variant='outlined'> 
-                    <Box sx={{ display: 'flex', py: 2,  gap: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems:'center', py: 2,  gap: 3 }}>
                         <Input 
                             type='text'
                             placeholder='Search by chapter name:'
@@ -142,6 +142,7 @@ const AllProgressTable: React.FC<{
                             <Option value='revision'>Reading Type - Revision</Option>
                             <Option value='createdAt'>Log Date</Option>
                         </Select>
+                        <Typography>{parsedLogs.length} logs</Typography>
                     </Box>
                     <Table sx={{ my: 2 }} borderAxis='bothBetween'>
                         {(sortedLogs!.length > 0) ? (
@@ -215,7 +216,7 @@ const OverallProgress: React.FC<{
 
                 <Divider />
 
-                <Box sx={{ overflow: 'scroll', p: 0 }}>
+                <Box sx={{ overflowY: 'scroll', p: 0 }}>
                     {filteredChapters.map((chapter, index) => (
                         <>
                             <Box 

@@ -1,13 +1,14 @@
-'use client';
-
 import { auth } from "@/firebase/clientApp";
-import { Box, Button, Grid, Sheet, Typography, styled, useColorScheme } from "@mui/joy";
+import { Box, Button, Dropdown, Grid, ListDivider, ListItemDecorator, Menu, MenuButton, MenuItem, Sheet, Typography, styled, Link, Avatar } from "@mui/joy";
 import { signOut } from "firebase/auth";
-import Link from "next/link";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import ModeToggle from "./ModeToggle";
+import MenuIcon from '@mui/icons-material/Menu';
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const Header = (): JSX.Element => {
+    const [user, loading, error] = useAuthState(auth);
     const router = useRouter();
     const handleSignOut = () => {        
         signOut(auth)
@@ -19,7 +20,7 @@ const Header = (): JSX.Element => {
             })
     };
 
-    const LinkElement = styled(Link)(({ theme }) => ({
+    const LinkElement = styled(NextLink)(({ theme }) => ({
         cursor: 'pointer',
         textDecoration: 'none',
         '&:hover': {
@@ -41,24 +42,42 @@ const Header = (): JSX.Element => {
 
     return (
         <Header sx={{ p: 3 }}>
-            <Grid container spacing={3} sx={{ flexGrow: 1, }}>
+            <Grid container spacing={3} sx={{ flexGrow: 1 }}>
                 <Grid xs={6}>
                     <LinkElement href='/landing'>
                         <Typography level="h3">Quran Tracker</Typography>
                     </LinkElement>
                 </Grid>
-                <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row" }}>
-                    <LinkHolder>
-                            <LinkElement href='/landing'>
-                                <Typography>Home</Typography>
-                            </LinkElement>
-                    </LinkHolder>
-                    <LinkHolder>
-                        <LinkElement href='' onClick={handleSignOut}>
-                            <Typography>Sign out</Typography>
-                        </LinkElement>
-                    </LinkHolder>
+                <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row", gap: {xs: 0, md: 1} }}>
+                    <Dropdown>
+                        <MenuButton size="sm">
+                            <MenuIcon />
+                        </MenuButton>
+                        <Menu size="md">
+                            <MenuItem>
+                                <LinkElement href='/landing'>
+                                    <Link overlay>Home</Link>
+                                </LinkElement>
+                            </MenuItem>
+                            <ListDivider />
+                            <MenuItem>
+                                <LinkElement href='' onClick={handleSignOut}>
+                                    <Link overlay>Sign out</Link>
+                                </LinkElement>
+                            </MenuItem>
+                        </Menu>
+                    </Dropdown>
                     <ModeToggle />
+                    <NextLink href='/settings'>
+                        {(user?.photoURL) ? (
+                            <Avatar 
+                                src={user.photoURL} 
+                                sx={{ ml: 1, border: 1, borderColor: 'neutral.outlinedBorder' }}/>
+                        ) : ( 
+                            <Avatar sx={{ ml: 1, border: 1, borderColor: 'neutral.outlinedBorder' }}/>
+                        )}
+                        
+                    </NextLink>
                 </Grid>
             </Grid>
         </Header>

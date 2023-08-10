@@ -32,7 +32,6 @@ const Landing: NextPage = (): JSX.Element => {
                 <Box>
                     <Header />
                     <Container sx={{ my: 3 }}>
-
                         {(status === 'new-user') ? (
                             // Hide Alert
                             <Alert 
@@ -51,7 +50,7 @@ const Landing: NextPage = (): JSX.Element => {
                             </Alert>
                         ) : ( <></> )}
 
-                        <Typography level='h1' fontSize='xl4' sx={{ my: 4}}>Welcome, {user.displayName}</Typography>
+                        <Typography level='h1' sx={{ my: 4, fontSize: 'clamp(2rem, 0.7153rem + 1.6368vw, 4rem)'}}>Welcome, {user.displayName}</Typography>
 
                         <Grid container sx={{ gap: 2, p: 0, m: 0 }}>
                             <Grid xs={12} md={3}>
@@ -80,7 +79,7 @@ const Landing: NextPage = (): JSX.Element => {
                                         <Typography level="body-sm">
                                             <Tooltip title='All Praise to God'>
                                             <Typography>Alhamdillulah</Typography>
-                                            </Tooltip>, you have been working hard. To track your recent progress, click here.
+                                            </Tooltip>, you have been working hard. To view your recent or overall progress, click here.
                                         </Typography>
                                     </CardContent>
                                     <CardActions buttonFlex="0 1 200px">

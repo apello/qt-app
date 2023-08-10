@@ -1,4 +1,3 @@
-import { serverTimestamp } from "firebase/firestore";
 import { Key } from "react";
 
 export interface ChapterLog {
@@ -86,7 +85,7 @@ export const sortLogs = (sortOption: string, logs: Array<ProgressLog>): Array<Pr
       })
       break;
     case 'createdAt':
-      sortedLogs = logs.sort((a, b) => { return a.data.createdAt - b.data.createdAt })
+      sortedLogs = logs.sort((a, b) => { return b.data.createdAt - a.data.createdAt })
       break;
     default: 
       sortedLogs = logs.sort();

@@ -131,7 +131,11 @@ const TrackProgress: NextPage = (): JSX.Element => {
                         ) : (verseRange.startVerse),
                     verseAmount: 
                         (completed) ? (
-                            (currentChapterLog !== undefined && currentChapterLog !== null) ? (currentChapter!.verseCount - currentChapterLog!.lastVerseCompleted) + 1 : currentChapter!.verseCount
+                            (currentChapterLog !== undefined && currentChapterLog !== null) ? (
+                                (currentChapterLog.lastVerseCompleted !== currentChapter.verseCount) ? (
+                                    (currentChapter!.verseCount - currentChapterLog!.lastVerseCompleted) + 1 
+                                ) :  currentChapter!.verseCount
+                            ) : currentChapter!.verseCount
                         ) : (verseRange.endVerse - verseRange.startVerse)+1,
                 })
                 .then(() => {
@@ -234,7 +238,7 @@ const ProgressForm: React.FC<{
     readingType
 }) => {
     const chapterOptions = chapters.map((chapter) => {
-        return <Option key={chapter.number} value={chapter.name}>{chapter.number}. {chapter.name}</Option>
+        return <Option key={chapter.number+chapter.name} value={chapter.name}>{chapter.number}. {chapter.name}</Option>
     });
 
     return (

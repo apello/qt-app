@@ -1,9 +1,9 @@
 'use client';
 
-import { Box, CssVarsProvider, Grid, Sheet, Typography, styled } from "@mui/joy";
-import { NextPage } from "next";
-import Link from "next/link";
+import { Box, CssVarsProvider, Dropdown, Grid, ListDivider, Menu, MenuButton, MenuItem, Sheet, Typography, styled, Link } from "@mui/joy";
+import NextLink from "next/link";
 import ModeToggle from "./ModeToggle";
+import MenuIcon from '@mui/icons-material/Menu';
 
 const AuthHeader = (): JSX.Element => {
     const LinkHolder = styled(Sheet)(({ theme }) => ({
@@ -15,7 +15,7 @@ const AuthHeader = (): JSX.Element => {
         color: theme.vars.palette.text.secondary,
     }));
 
-    const LinkElement = styled(Link)(({
+    const LinkElement = styled(NextLink)(({
         cursor: 'pointer',
         textDecoration: 'none',
         color: '#000',
@@ -34,17 +34,39 @@ const AuthHeader = (): JSX.Element => {
                             </Typography>
                         </LinkElement>
                     </Grid>
-                    <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row" }}>
-                        <LinkHolder>
-                                <LinkElement href='/auth/login'>
-                                    <Typography>Login</Typography>
-                                </LinkElement>
-                        </LinkHolder>
-                        <LinkHolder>
-                                <LinkElement href='/auth/signup'>
-                                    <Typography>Sign Up</Typography>
-                                </LinkElement>
-                        </LinkHolder>
+                    <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row", gap: 1 }}>
+                        <Box sx={{ display: { xs: 'flex', md: 'none' }}}>
+                            <Dropdown>
+                                <MenuButton size="sm">
+                                    <MenuIcon />
+                                </MenuButton>
+                                <Menu size="md">
+                                    <MenuItem>
+                                        <LinkElement href='/auth/login'>
+                                            <Link overlay>Login</Link>
+                                        </LinkElement>
+                                    </MenuItem>
+                                    <ListDivider />
+                                    <MenuItem>
+                                        <LinkElement href='/auth/signup'>
+                                            <Link overlay>Sign up</Link>
+                                        </LinkElement>
+                                    </MenuItem>
+                                </Menu>
+                            </Dropdown>
+                        </Box>
+                        <Box sx={{ display: { xs: 'none', md: 'flex' }}}>
+                            <LinkHolder>
+                                    <LinkElement href='/auth/login'>
+                                        <Typography>Login</Typography>
+                                    </LinkElement>
+                            </LinkHolder>
+                            <LinkHolder>
+                                    <LinkElement href='/auth/signup'>
+                                        <Typography>Sign Up</Typography>
+                                    </LinkElement>
+                            </LinkHolder>
+                        </Box>
                         <ModeToggle />
                     </Grid>
                 </Grid>

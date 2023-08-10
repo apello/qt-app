@@ -14,7 +14,7 @@ const ModeToggle = () => {
         sx={{ borderRadius: '20px', ml: 1 }}
         onClick={() => setMode(mode === 'dark' ? 'light' : 'dark')}
         >
-        {mode === 'dark' ? <DarkModeOutlinedIcon /> : <LightModeOutlinedIcon /> }
+            {mode === 'dark' ? <DarkModeOutlinedIcon /> : <LightModeOutlinedIcon /> }
         </Button>
     );
       

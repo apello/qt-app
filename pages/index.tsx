@@ -1,11 +1,12 @@
 import ModeToggle from "@/components/ModeToggle";
 import TwoSidedLayout from "@/components/TwoSidedLayout";
 import { auth } from "@/firebase/clientApp";
-import { Box, Button, Container, CssVarsProvider, Grid, Sheet, Typography, styled } from "@mui/joy";
+import { Box, Button, Container, CssVarsProvider, Dropdown, Grid, ListDivider, Menu, MenuButton, MenuItem, Sheet, Typography, styled, Link } from "@mui/joy";
 import { NextPage } from "next";
-import Link from "next/link";
+import NextLink from "next/link";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ArrowForward from '@mui/icons-material/ArrowForward';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const Home: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);
@@ -45,19 +46,41 @@ const Home: NextPage = (): JSX.Element => {
                             </LinkHolder>
                         ) : (
                             <>
-                                <LinkHolder>
-                                    <LinkElement href='auth/login'>
-                                        <Typography>Login</Typography> 
-                                    </LinkElement>
-                                </LinkHolder>
-                                <LinkHolder>
-                                    <LinkElement href='auth/signup'>
-                                        <Typography>Sign Up</Typography>
-                                    </LinkElement>
-                                </LinkHolder>
-                                <ModeToggle />
+                                <Box sx={{ display: { xs: 'flex', md: 'none' }}}>
+                                    <Dropdown>
+                                        <MenuButton size="sm">
+                                            <MenuIcon />
+                                        </MenuButton>
+                                        <Menu size="md">
+                                            <MenuItem>
+                                                <LinkElement href='/auth/login'>
+                                                    <Link overlay>Login</Link>
+                                                </LinkElement>
+                                            </MenuItem>
+                                            <ListDivider />
+                                            <MenuItem>
+                                                <LinkElement href='/auth/signup'>
+                                                    <Link overlay>Sign up</Link>
+                                                </LinkElement>
+                                            </MenuItem>
+                                        </Menu>
+                                    </Dropdown>
+                                </Box>
+                                <Box sx={{ display: { xs: 'none', md: 'flex' }}}>
+                                    <LinkHolder>
+                                            <LinkElement href='/auth/login'>
+                                                <Typography>Login</Typography>
+                                            </LinkElement>
+                                    </LinkHolder>
+                                    <LinkHolder>
+                                            <LinkElement href='/auth/signup'>
+                                                <Typography>Sign Up</Typography>
+                                            </LinkElement>
+                                    </LinkHolder>
+                                </Box>
                             </>
                         )}
+                        <ModeToggle />
                     </Grid>
                 </Grid>
             </Box>

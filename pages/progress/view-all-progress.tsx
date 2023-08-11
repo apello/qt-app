@@ -195,13 +195,13 @@ const OverallProgress: React.FC<{
     const chapterNameToChapterLog = new Map(parsedChapterLogs.map((chapter: ChapterLog) => [chapter.name, chapter]));
     const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
 
-    const LinkElement = styled(Link)(({ theme }) => ({
+    const LinkElement = styled(Link)({
         cursor: 'pointer',
         textDecoration: 'none',
         '&:hover': {
             textDecoration: 'none',
         },
-    }));
+    });
 
     return (
         <Grid xs={12} md={4}>
@@ -218,10 +218,8 @@ const OverallProgress: React.FC<{
 
                 <Box sx={{ overflowY: 'scroll', p: 0 }}>
                     {filteredChapters.map((chapter, index) => (
-                        <>
-                            <Box 
-                                key={index + chapter.number + chapter.name} 
-                                sx={{ p: 2 }}>
+                        <Box key={index + chapter.number + chapter.name}>
+                            <Box sx={{ p: 2 }}>
                                 <Box sx={{ display: 'flex', alignContent: 'center' }}>
                                     <Typography level='title-lg'>{chapter.number}. {chapter.name}</Typography>
                                     <Chip
@@ -257,14 +255,10 @@ const OverallProgress: React.FC<{
                                             {amountMemorized(chapterNameToChapterLog.get(chapter.name)!.lastVerseCompleted, chapter.name, chapterNameToChapter)+ '% memorized'}
                                         </Typography>
                                     </Box>
-
                                 ) : ( '' ))}
-                                
-                                
                             </Box>
                             {(index !== filteredChapters.length-1) ? <Divider /> : <></> }
-                        </>
-
+                        </Box>
                     ))}
                 </Box>
             </Card>

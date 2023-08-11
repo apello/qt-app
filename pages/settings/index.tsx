@@ -1,60 +1,36 @@
 import { auth, db, storage } from "@/firebase/clientApp";
 import { User, onAuthStateChanged, sendEmailVerification, signOut, updateProfile } from "firebase/auth";
 import { NextPage } from "next";
-import Image from "next/image";
 import NextLink from "next/link";
-import { useEffect, useState } from "react";
-import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized, prettyPrintNormalDate } from '../../common/utils';
+import { useState } from "react";
+import { prettyPrintNormalDate } from '../../common/utils';
 import Header from "@/components/Header";
 import { parse } from "path";
-import { useAuthState, useUpdateProfile } from "react-firebase-hooks/auth";
+import { useAuthState } from "react-firebase-hooks/auth";
 import ErrorPage from "@/components/ErrorPage";
 import LoadingPage from "@/components/LoadingPage";
-import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet, Avatar, Grid, Divider, Badge, Card, styled, Modal, ModalClose } from "@mui/joy";
+import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet, Avatar, Grid, Divider, Badge, Card, styled, Modal, ModalClose, Alert, IconButton } from "@mui/joy";
 import EditIcon from '@mui/icons-material/Edit';
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import Dropzone from "@/components/Dropzone";
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+
 
 const ViewProgress: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);
     const [alert, setAlert] = useState('');
-    const [file, setFile] = useState<Blob | null>();
+    const [openAlert, setOpenAlert] = useState(false);
     const [openModal, setOpenModal] = useState(false);
 
-    // const verifyEmail = () => {
-    //     if(user !== undefined && user !== null) {
-    //         sendEmailVerification(user)
-    //             .then(() => {
-    //                 setAlert('Email verification successfully sent! Please check your email for the next steps.');
-    //             })
-    //             .catch((error) => {
-    //                 setAlert(`Error sending email verification: ${error}`);
-    //             })
-    //     }
-    // };
-
-    console.log(file)
-
-    const handlePhotoUrl = async () => {
-        if(user && file) {
-            await uploadBytes(ref(storage, `${user.uid}.png`), file)
+    const verifyEmail = () => {
+        if(user !== undefined && user !== null) {
+            sendEmailVerification(user)
                 .then(() => {
-                    getDownloadURL(ref(storage, `${user.uid}.png`))
-                        .then((photoURL) => {
-                            updateProfile(user, { 
-                                displayName: user.displayName,
-                                photoURL: photoURL
-                            })
-                                .catch((error) => {
-                                    console.log(`Could not set photo URL: ${error}`)
-                                })
-                        })  
-                        .catch((error) => {
-                            console.log(`Download failed: ${error}`)
-                        })
+                    setOpenAlert(true);
+                    setAlert('Email verification successfully sent! Please check your email for the next steps.');
                 })
                 .catch((error) => {
-                    console.log(`Upload failed: ${error}`)
+                    setOpenAlert(true);
+                    setAlert(`Error sending email verification: ${error}`);
                 })
         }
     };
@@ -64,6 +40,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
         textDecoration: 'none',
         color: '#000',
     }));
+
        
     if(loading){ return <LoadingPage /> }
     if(error) { return <ErrorPage /> }
@@ -73,6 +50,22 @@ const ViewProgress: NextPage = (): JSX.Element => {
                 <Box> 
                     <Header />
                     <Container sx={{ mt: 3, mb: 5 }}>
+                    {(openAlert) ? (
+                            <Alert 
+                                variant="soft" 
+                                sx={{ my: 2 }}
+                                endDecorator={
+                                    <IconButton 
+                                        variant="plain" 
+                                        size="sm" 
+                                        color="neutral" 
+                                        onClick={() => setOpenAlert(false)}>
+                                        <CloseRoundedIcon />
+                                    </IconButton>
+                                }>
+                                    {alert}
+                            </Alert>
+                        ) : ( <></> )}
                         <Box sx={{ mb: 2 }}>
                             <Breadcrumbs sx={{ px: 0 }}>
                                 <Typography level='title-sm'>
@@ -88,28 +81,27 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                 <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Profile</Typography>
                             </Button>
                             <Button>
-                                <NextLink href='settings/account'>
+                                <NextLink href='/settings/account'>
                                     <Link overlay>
                                         <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Account</Typography>
                                     </Link>
                                 </NextLink>
                             </Button>
                             <Button>
-                                <NextLink href='settings/password'>
+                                <NextLink href='/settings/password'>
                                     <Link overlay>
                                         <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Password</Typography>
                                     </Link>
                                 </NextLink>
                             </Button>
                             <Button>
-                                <NextLink href='settings/goals'>
+                                <NextLink href='/settings/goals'>
                                     <Link overlay>
                                         <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Goals</Typography>
                                     </Link>
                                 </NextLink>
                             </Button>
                         </ButtonGroup>
-
                        
                         <Card sx={{ 
                             display: 'flex', 
@@ -189,8 +181,18 @@ const ViewProgress: NextPage = (): JSX.Element => {
                             <Box>
                                 <Typography level='h1' sx={{ mb: 1 }}>{user.displayName}</Typography>
                                 <Typography level='title-md'>
-                                    Email: {user.email} - {(user.emailVerified) ? <Typography>Verified</Typography>  : <Typography>Not Verified</Typography>}
-                                    {/* : <a style={{ color: 'purple', textDecoration: 'underline', cursor: 'pointer' }} onClick={verifyEmail}>Not Verified</a>} */}
+                                    Email: {user.email} - {(user.emailVerified) ? (
+                                        <Typography>Verified</Typography> 
+                                    ) : (
+                                        <a style={{ 
+                                            color: 'purple', 
+                                            textDecoration: 'underline', 
+                                            cursor: 'pointer' 
+                                            }} 
+                                            onClick={verifyEmail}>
+                                            Not Verified
+                                        </a>
+                                    )}
                                 </Typography>
                                 <Typography level='title-md'>Joined: {prettyPrintNormalDate(user.metadata.creationTime)}</Typography>
                                 <Typography level='title-md'>Last Sign In: {prettyPrintNormalDate(user.metadata.lastSignInTime)}</Typography>

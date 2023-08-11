@@ -20,20 +20,13 @@ const Header = (): JSX.Element => {
             })
     };
 
-    const LinkElement = styled(NextLink)(({ theme }) => ({
+    const LinkElement = styled(NextLink)({
         cursor: 'pointer',
         textDecoration: 'none',
         '&:hover': {
             textDecoration: 'underline',
         },
-    }));
-
-    const LinkHolder = styled(Sheet)(({ theme }) => ({
-        backgroundColor: theme.palette.background.body,
-        padding: theme.spacing(1),
-        textAlign: 'center',
-        color: theme.vars.palette.text.secondary,
-    }));
+    });
 
     const Header = styled(Box)(({ theme }) => ({
         backgroundColor: theme.palette.background.body,

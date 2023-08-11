@@ -41,30 +41,31 @@ const AuthHeader = (): JSX.Element => {
                                     <MenuIcon />
                                 </MenuButton>
                                 <Menu size="md">
-                                    <MenuItem>
-                                        <LinkElement href='/auth/login'>
-                                            <Link overlay>Login</Link>
-                                        </LinkElement>
-                                    </MenuItem>
+                                    <LinkElement href='/auth/login'>
+                                        <MenuItem>
+                                            Login
+                                        </MenuItem>
+                                    </LinkElement>
                                     <ListDivider />
-                                    <MenuItem>
-                                        <LinkElement href='/auth/signup'>
-                                            <Link overlay>Sign up</Link>
-                                        </LinkElement>
-                                    </MenuItem>
+                                    <LinkElement href='/auth/signup'>
+                                        <MenuItem>
+                                            Sign up
+                                        </MenuItem>
+                                    </LinkElement>
+
                                 </Menu>
                             </Dropdown>
                         </Box>
                         <Box sx={{ display: { xs: 'none', md: 'flex' }}}>
                             <LinkHolder>
-                                    <LinkElement href='/auth/login'>
-                                        <Typography>Login</Typography>
-                                    </LinkElement>
+                                <LinkElement href='/auth/login'>
+                                    <Typography>Login</Typography>
+                                </LinkElement>
                             </LinkHolder>
                             <LinkHolder>
-                                    <LinkElement href='/auth/signup'>
-                                        <Typography>Sign Up</Typography>
-                                    </LinkElement>
+                                <LinkElement href='/auth/signup'>
+                                    <Typography>Sign Up</Typography>
+                                </LinkElement>
                             </LinkHolder>
                         </Box>
                         <ModeToggle />

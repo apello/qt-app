@@ -62,13 +62,11 @@ const Landing: NextPage = (): JSX.Element => {
                                         </Typography>
                                     </CardContent>
                                     <CardActions buttonFlex="0 1 200px">
-                                        <Button variant="outlined" color="neutral">
-                                            <NextLink href="/progress/track-progress">
-                                                <LinkElement overlay>
+                                        <NextLink href="/progress/track-progress">
+                                            <Button variant="outlined" color="neutral">
                                                     <Typography level='body-sm'>Track Progress</Typography>
-                                                </LinkElement>
-                                            </NextLink>
-                                        </Button>
+                                            </Button>
+                                        </NextLink>
                                     </CardActions>
                                 </Card>
                             </Grid>
@@ -83,13 +81,11 @@ const Landing: NextPage = (): JSX.Element => {
                                         </Typography>
                                     </CardContent>
                                     <CardActions buttonFlex="0 1 200px">
-                                        <Button variant="outlined" color="neutral">
-                                            <NextLink href="/progress/view-recent-progress">
-                                                <LinkElement overlay>
+                                        <NextLink href="/progress/view-recent-progress">
+                                            <Button variant="outlined" color="neutral">
                                                     <Typography level='body-sm'>View Progress</Typography>
-                                                </LinkElement>
-                                            </NextLink>
-                                        </Button>
+                                            </Button>
+                                        </NextLink>
                                     </CardActions>
                                 </Card>
                             </Grid>

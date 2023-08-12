@@ -1,6 +1,6 @@
 import { registrationCredentialsValid } from "@/common/utils";
 import { auth } from "@/firebase/clientApp";
-import { styled, Sheet, CssVarsProvider, Box, Grid, Typography, FormControl, FormLabel, Input, Button } from "@mui/joy";
+import { styled, Sheet, CssVarsProvider, Box, Grid, Typography, FormControl, FormLabel, Input, Button, Tooltip } from "@mui/joy";
 import { sendEmailVerification, updateProfile } from "firebase/auth";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -8,7 +8,7 @@ import { FormEventHandler, useEffect, useState } from "react";
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth";
 import SendIcon from '@mui/icons-material/Send';
 import AuthHeader from "@/components/AuthHeader";
-import error from "next/error";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const SignUp: NextPage = (): JSX.Element => {
     const [registration, setRegistration] = useState({ displayName: '', email: '', password: ''});
@@ -70,10 +70,10 @@ const SignUp: NextPage = (): JSX.Element => {
             createUserWithEmailAndPassword(registration.email, registration.password)
         } else {
             setMessage(`
-                Email/password does not meet these requirements:
+                Given values do not meet these requirements:
                     Name must only contain letters and be longer than 1 character.
                     Email must be valid. 
-                    Password must be longer than 8 characters.
+                    Password must be equal to or greater than 8 characters.
             `);
         }
     }
@@ -103,7 +103,12 @@ const SignUp: NextPage = (): JSX.Element => {
 
                 <form onSubmit={(e) => handleSubmit(e)}>
                     <FormControl sx={{ mb: 1 }}>
-                        <FormLabel>Full Name:</FormLabel>
+                        <FormLabel sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Tooltip title='Name must only contain letters and be longer than 1 character.'>
+                                <InfoOutlinedIcon sx={{ color: 'text.secondary', height: '15px' }} />
+                            </Tooltip>
+                            Full Name:
+                        </FormLabel>
                         <Input
                             name="text"
                             type="text"
@@ -112,7 +117,12 @@ const SignUp: NextPage = (): JSX.Element => {
                             required />
                     </FormControl>
                     <FormControl sx={{ mb: 1 }}>
-                        <FormLabel>Email:</FormLabel>
+                        <FormLabel sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Tooltip title='Email must be in proper email form, i.e, email@emailprovider.com.'>
+                                <InfoOutlinedIcon sx={{ color: 'text.secondary', height: '15px' }} />
+                            </Tooltip>
+                            Email:
+                        </FormLabel>
                         <Input
                             name="email"
                             type="email"
@@ -121,7 +131,12 @@ const SignUp: NextPage = (): JSX.Element => {
                             required />
                     </FormControl>
                     <FormControl sx={{ mb: 1 }}>
-                        <FormLabel>Password:</FormLabel>
+                        <FormLabel sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Tooltip title='Password must be equal to or greater than 8 characters.'>
+                                <InfoOutlinedIcon sx={{ color: 'text.secondary', height: '15px' }} />
+                            </Tooltip>
+                            Password:
+                        </FormLabel>
                         <Input
                             name="password"
                             type="password"

@@ -46,10 +46,21 @@ const Header = (): JSX.Element => {
                         <MenuButton size="sm">
                             <MenuIcon />
                         </MenuButton>
-                        <Menu size="md">
+                        <Menu size="md" placement="bottom-end">
                             <MenuItem>
                                 <LinkElement href='/landing'>
                                     <Link overlay>Home</Link>
+                                </LinkElement>
+                            </MenuItem>
+                            <ListDivider />
+                            <MenuItem>
+                                <LinkElement href='/progress/track-progress'>
+                                    <Link overlay>Track Progress</Link>
+                                </LinkElement>
+                            </MenuItem>
+                            <MenuItem>
+                                <LinkElement href='/progress/view-recent-progress'>
+                                    <Link overlay>View Progress</Link>
                                 </LinkElement>
                             </MenuItem>
                             <ListDivider />

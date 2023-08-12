@@ -34,8 +34,8 @@ export const credentialsValid = (credentials: any): boolean => {
 export const registrationCredentialsValid = (credentials: any): boolean => {
   return (
     credentials.displayName.length > 1 
-    && /[^a-zA-Z]/.test(credentials.displayName)
-    && credentials.password.length > 8
+    && (/[^a-zA-Z]/).test(credentials.displayName)
+    && credentials.password.length > 7
   );
 }
 
@@ -93,10 +93,9 @@ export const sortLogs = (sortOption: string, logs: Array<ProgressLog>): Array<Pr
   }
 
   return sortedLogs
-}
+};
 
-
-// Chapter object
+// Surah and Juz objects
 
 export const chapters = [
     {
@@ -121,7 +120,7 @@ export const chapters = [
     },
     {
       "number": 5,
-      "name": "Al-Maidah",
+      "name": "Al-Ma'idah",
       "verseCount": 120
     },
     {
@@ -289,6 +288,7 @@ export const chapters = [
       "name": "Sad",
       "verseCount": 88
     },
+    //
     {
       "number": 39,
       "name": "Az-Zumar",
@@ -669,5 +669,250 @@ export const chapters = [
     "name": "An-Nas",
     "verseCount": 6
     }
-]
+];
     
+export const parts = [
+  {
+    "partNumber": 1,
+    "startChapter": 1,
+    "startVerse": 1,
+    "endChapter": 2,
+    "endVerse": 141,
+    "verseCount": 141
+  },
+  {
+    "partNumber": 2,
+    "startChapter": 2,
+    "startVerse": 142,
+    "endChapter": 2,
+    "endVerse": 252,
+    "verseCount": 111
+  },
+  {
+    "partNumber": 3,
+    "startChapter": 2,
+    "startVerse": 253,
+    "endChapter": 3,
+    "endVerse": 92,
+    "verseCount": 85
+  },
+  {
+    "partNumber": 4,
+    "startChapter": 3,
+    "startVerse": 93,
+    "endChapter": 4,
+    "endVerse": 23,
+    "verseCount": 89
+  },
+  {
+    "partNumber": 5,
+    "startChapter": 4,
+    "startVerse": 24,
+    "endChapter": 4,
+    "endVerse": 147,
+    "verseCount": 124
+  },
+  {
+    "partNumber": 6,
+    "startChapter": 4,
+    "startVerse": 148,
+    "endChapter": 5,
+    "endVerse": 82,
+    "verseCount": 113
+  },
+  {
+    "partNumber": 7,
+    "startChapter": 5,
+    "startVerse": 83,
+    "endChapter": 6,
+    "endVerse": 110,
+    "verseCount": 28
+  },
+  {
+    "partNumber": 8,
+    "startChapter": 6,
+    "startVerse": 111,
+    "endChapter": 7,
+    "endVerse": 87,
+    "verseCount": 150
+  },
+  {
+    "partNumber": 9,
+    "startChapter": 7,
+    "startVerse": 88,
+    "endChapter": 8,
+    "endVerse": 40,
+    "verseCount": 93
+  },
+  {
+    "partNumber": 10,
+    "startChapter": 8,
+    "startVerse": 41,
+    "endChapter": 9,
+    "endVerse": 92,
+    "verseCount": 52
+  },
+  {
+    "partNumber": 11,
+    "startChapter": 9,
+    "startVerse": 93,
+    "endChapter": 10,
+    "endVerse": 109,
+    "verseCount": 59
+  },
+  {
+    "partNumber": 12,
+    "startChapter": 10,
+    "startVerse": 110,
+    "endChapter": 11,
+    "endVerse": 5,
+    "verseCount": 123
+  },
+  {
+    "partNumber": 13,
+    "startChapter": 11,
+    "startVerse": 6,
+    "endChapter": 12,
+    "endVerse": 52,
+    "verseCount": 103
+  },
+  {
+    "partNumber": 14,
+    "startChapter": 12,
+    "startVerse": 53,
+    "endChapter": 15,
+    "endVerse": 99,
+    "verseCount": 91
+  },
+  {
+    "partNumber": 15,
+    "startChapter": 15,
+    "startVerse": 100,
+    "endChapter": 16,
+    "endVerse": 50,
+    "verseCount": 111
+  },
+  {
+    "partNumber": 16,
+    "startChapter": 16,
+    "startVerse": 51,
+    "endChapter": 18,
+    "endVerse": 74,
+    "verseCount": 93
+  },
+  {
+    "partNumber": 17,
+    "startChapter": 18,
+    "startVerse": 75,
+    "endChapter": 20,
+    "endVerse": 130,
+    "verseCount": 56
+  },
+  {
+    "partNumber": 18,
+    "startChapter": 20,
+    "startVerse": 131,
+    "endChapter": 22,
+    "endVerse": 78,
+    "verseCount": 63
+  },
+  {
+    "partNumber": 19,
+    "startChapter": 23,
+    "startVerse": 1,
+    "endChapter": 25,
+    "endVerse": 20,
+    "verseCount": 95
+  },
+  {
+    "partNumber": 20,
+    "startChapter": 25,
+    "startVerse": 21,
+    "endChapter": 27,
+    "endVerse": 55,
+    "verseCount": 77
+  },
+  {
+    "partNumber": 21,
+    "startChapter": 27,
+    "startVerse": 56,
+    "endChapter": 29,
+    "endVerse": 45,
+    "verseCount": 96
+  },
+  {
+    "partNumber": 22,
+    "startChapter": 29,
+    "startVerse": 46,
+    "endChapter": 33,
+    "endVerse": 30,
+    "verseCount": 69
+  },
+  {
+    "partNumber": 23,
+    "startChapter": 33,
+    "startVerse": 31,
+    "endChapter": 36,
+    "endVerse": 27,
+    "verseCount": 53
+  },
+  {
+    "partNumber": 24,
+    "startChapter": 36,
+    "startVerse": 28,
+    "endChapter": 39,
+    "endVerse": 31,
+    "verseCount": 60
+  },
+  {
+    "partNumber": 25,
+    "startChapter": 39,
+    "startVerse": 32,
+    "endChapter": 41,
+    "endVerse": 46,
+    "verseCount": 35
+  },
+  {
+    "partNumber": 26,
+    "startChapter": 41,
+    "startVerse": 47,
+    "endChapter": 45,
+    "endVerse": 37,
+    "verseCount": 38
+  },
+  {
+    "partNumber": 27,
+    "startChapter": 46,
+    "startVerse": 1,
+    "endChapter": 51,
+    "endVerse": 30,
+    "verseCount": 56
+  },
+  {
+    "partNumber": 28,
+    "startChapter": 51,
+    "startVerse": 31,
+    "endChapter": 57,
+    "endVerse": 29,
+    "verseCount": 45
+  },
+  {
+    "partNumber": 29,
+    "startChapter": 58,
+    "startVerse": 1,
+    "endChapter": 66,
+    "endVerse": 12,
+    "verseCount": 46
+  },
+  {
+    "partNumber": 30,
+    "startChapter": 67,
+    "startVerse": 1,
+    "endChapter": 114,
+    "endVerse": 6,
+    "verseCount": 60
+  }
+];
+
+export const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
+export const partNumberToPart = new Map(parts.map(part => [part.partNumber, part]));

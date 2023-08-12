@@ -2,7 +2,7 @@ import { auth, db } from "@/firebase/clientApp";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Chapter, ChapterLog, ProgressLog, chapters, get_today, prettyPrintDate } from '../../common/utils';
+import { Chapter, ChapterLog, ProgressLog, chapterNameToChapter, chapters, get_today, prettyPrintDate } from '../../common/utils';
 import Header from "@/components/Header";
 import { DocumentData, addDoc, collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { useRouter } from "next/router";
@@ -24,7 +24,6 @@ const TrackProgress: NextPage = (): JSX.Element => {
     const [openAlert, setOpenAlert] = useState(false);
 
     const { query : { chapter } } = useRouter();
-    const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
     const params = (chapter !== null && chapter !== undefined) ? chapterNameToChapter.get(chapter!.toString()) : undefined;
     const [currentChapter, setCurrentChapter] = useState<Chapter | undefined>(params);
 

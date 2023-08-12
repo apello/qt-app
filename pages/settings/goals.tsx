@@ -88,7 +88,7 @@ const Goals: NextPage = (): JSX.Element => {
                             px: 3
                         }} 
                         variant='outlined'> 
-                            <Typography level="title-md">This page is under-construction. Coming soon!</Typography>
+                            <Typography level="title-md">This page is under-construction 🚧. Coming soon, ان شاء الله!</Typography>
                         </Card>
                     </Container>
                 </Box>

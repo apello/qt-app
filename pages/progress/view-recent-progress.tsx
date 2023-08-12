@@ -20,7 +20,6 @@ const ViewProgress: NextPage = (): JSX.Element => {
     const [memorizationLogs, setMemorizationLogs] = useState<any>();
     const [revisionLogs, setRevisionLogs] = useState<any>();
 
-
     useEffect(() => {
         const downloadProgressLogs = () => {
             let arr: DocumentData[] = [];

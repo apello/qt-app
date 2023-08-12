@@ -1,24 +1,23 @@
-import { auth, db, storage } from "@/firebase/clientApp";
+import { auth } from "@/firebase/clientApp";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
-import { prettyPrintNormalDate } from '../../common/utils';
 import Header from "@/components/Header";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ErrorPage from "@/components/ErrorPage";
 import LoadingPage from "@/components/LoadingPage";
-import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet, Avatar, Grid, Divider, Badge, Card, styled, Modal, ModalClose, Alert, IconButton, FormControl, FormLabel, Input } from "@mui/joy";
-import EditIcon from '@mui/icons-material/Edit';
+import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet, Avatar, Grid, Divider, Badge, Card, styled, Modal, ModalClose, Alert, IconButton, FormControl, FormLabel, Input, Tooltip } from "@mui/joy";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { updateProfile, updateEmail, updatePassword } from "firebase/auth";
+import { updatePassword } from "firebase/auth";
 import SendIcon from '@mui/icons-material/Send';
 import { useRouter } from "next/router";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const ChangePassword: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);
     const [alert, setAlert] = useState('');
     const [openAlert, setOpenAlert] = useState(false);
-    const [passwords, setPasswords] = useState({ password: '', reEnterPassword: ''});
+    const [passwords, setPasswords] = useState({ initialPassword: '', reEnterPassword: ''});
     const [loadingUpdate, setLoadingUpdate] = useState(false);
     const router = useRouter();
 
@@ -33,16 +32,16 @@ const ChangePassword: NextPage = (): JSX.Element => {
 
     const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if((user !== null && user !== undefined)) {
-            if(passwords.password !== passwords.reEnterPassword) {
+        if(user) {
+            if(passwords.initialPassword !== passwords.reEnterPassword) {
                 setOpenAlert(true);
-                setAlert('Passwords do not match! Please try again.');
-            } else if(passwords.password.length >= 8) {
+                setAlert('Error updating user account information: given passwords do not match. Please try again.');
+            } else if(passwords.initialPassword.length < 8) {
                 setOpenAlert(true);
-                setAlert('Password must be greater than 8 characters. Please try again.');
+                setAlert('Error updating user account information: given password must be 8 characters or more. Please try again.');
             } else {
                 setLoadingUpdate(true);
-                updatePassword(user, passwords.password)
+                updatePassword(user, passwords.initialPassword)
                     .then(() => {
                         setLoadingUpdate(false);
                         setOpenAlert(true);
@@ -60,13 +59,6 @@ const ChangePassword: NextPage = (): JSX.Element => {
             }
         }
     };
-
-    const LinkElement = styled(Link)(({
-        cursor: 'pointer',
-        textDecoration: 'none',
-        color: '#000',
-    }));
-
        
     if(loading){ return <LoadingPage /> }
     if(error) { return <ErrorPage /> }
@@ -137,7 +129,12 @@ const ChangePassword: NextPage = (): JSX.Element => {
                             }} 
                             variant='outlined'> 
 
-                            <Typography level="h3">Change Password:</Typography>
+                            <Typography level="h3" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Tooltip title='The password entered must be equal to or greater than 8 characters, and passwords must match.'>
+                                        <InfoOutlinedIcon sx={{ color: 'text.secondary', height: '20px' }} />
+                                    </Tooltip>
+                                Change Password:
+                                </Typography>
                             <form 
                                 onSubmit={(e) => handleChangePassword(e)}
                                 style={{ 
@@ -147,15 +144,15 @@ const ChangePassword: NextPage = (): JSX.Element => {
                                     gap: '15px'
                                  }}>
                                 <FormControl>
-                                    <FormLabel>Enter Password:</FormLabel>
+                                    <FormLabel>Enter password:</FormLabel>
                                     <Input 
                                         type='password'
-                                        value={passwords.password}
-                                        onChange={(e) => setPasswords({...passwords, password: e.target.value})}
+                                        value={passwords.initialPassword}
+                                        onChange={(e) => setPasswords({...passwords, initialPassword: e.target.value})}
                                         required />
                                 </FormControl>       
                                 <FormControl>
-                                    <FormLabel>Re-enter Password:</FormLabel>
+                                    <FormLabel>Re-enter password:</FormLabel>
                                     <Input 
                                         type='password'
                                         value={passwords.reEnterPassword}
@@ -166,7 +163,7 @@ const ChangePassword: NextPage = (): JSX.Element => {
                                 {(!loadingUpdate) ? (
                                     <Button
                                         type='submit'
-                                        disabled={passwords.password === '' && passwords.reEnterPassword === ''}
+                                        disabled={passwords.initialPassword === '' || passwords.reEnterPassword === ''}
                                         variant='outlined'
                                         color='neutral'
                                         sx={{ display: 'inherit', alignSelf: 'flex-end', width: '200px'}}>

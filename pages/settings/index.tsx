@@ -9,11 +9,11 @@ import { parse } from "path";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ErrorPage from "@/components/ErrorPage";
 import LoadingPage from "@/components/LoadingPage";
-import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet, Avatar, Grid, Divider, Badge, Card, styled, Modal, ModalClose, Alert, IconButton } from "@mui/joy";
+import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet, Avatar, Grid, Divider, Badge, Card, styled, Modal, ModalClose, Alert, IconButton, Tooltip } from "@mui/joy";
 import EditIcon from '@mui/icons-material/Edit';
 import Dropzone from "@/components/Dropzone";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const ViewProgress: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);
@@ -171,7 +171,14 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                             level="h4"
                                             textColor="inherit"
                                             fontWeight="lg"
+                                            sx={{
+                                                display: 'flex', 
+                                                alignItems: 'center'
+                                            }}
                                         >
+                                            <Tooltip title='Uploaded picture must be appropriate.'>
+                                                <InfoOutlinedIcon sx={{ color: 'text.secondary', height: '15px' }} />
+                                            </Tooltip>
                                             Change Profile Picture
                                         </Typography>
                                         <Dropzone user={user} />

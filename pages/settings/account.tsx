@@ -1,14 +1,13 @@
-import { auth, db, storage } from "@/firebase/clientApp";
+import { auth } from "@/firebase/clientApp";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
-import { prettyPrintNormalDate } from '../../common/utils';
 import Header from "@/components/Header";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ErrorPage from "@/components/ErrorPage";
 import LoadingPage from "@/components/LoadingPage";
-import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet, Avatar, Grid, Divider, Badge, Card, styled, Modal, ModalClose, Alert, IconButton, FormControl, FormLabel, Input } from "@mui/joy";
-import EditIcon from '@mui/icons-material/Edit';
+import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet, Avatar, Grid, Divider, Badge, Card, styled, Modal, ModalClose, Alert, IconButton, FormControl, FormLabel, Input, Tooltip } from "@mui/joy";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { updateProfile, updateEmail } from "firebase/auth";
 import SendIcon from '@mui/icons-material/Send';
@@ -18,7 +17,8 @@ const EditAccount: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);
     const [alert, setAlert] = useState('');
     const [openAlert, setOpenAlert] = useState(false);
-    const [credentials, setCredentials] = useState({ displayName: '', email: ''});
+    const [displayName, setDisplayName] = useState('');
+    const [email, setEmail] = useState('');
     const [loadingUpdateName, setLoadingUpdateName] = useState(false);
     const [loadingUpdateEmail, setLoadingUpdateEmail] = useState(false);
     const router = useRouter();
@@ -32,17 +32,19 @@ const EditAccount: NextPage = (): JSX.Element => {
         }
     },[reauthenticate]);
 
+    // Create a cloud function to check if name is appropriate
     const handleDisplayNameUpdate = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
         e.preventDefault();
-        if(user !== null && user !== undefined) {
+        if(user) {
             setLoadingUpdateName(true);
             updateProfile(user, {
-                displayName: (credentials.displayName !== '') ? credentials.displayName : user.displayName,
+                displayName: (displayName !== '') ? displayName : user.displayName,
             })
             .then(() => {
                 setLoadingUpdateName(false);
                 setOpenAlert(true);
                 setAlert('Successfully updated user display name!');
+                setDisplayName(''); // clear name
             })
             .catch((error) => {
                 setLoadingUpdateName(false);
@@ -54,18 +56,22 @@ const EditAccount: NextPage = (): JSX.Element => {
 
     const handleEmailUpdate = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
         e.preventDefault();
-        if(user !== null && user !== undefined) {
+        if(user) {
             setLoadingUpdateEmail(true);
-            updateEmail(user, (credentials.email !== '') ? credentials.email! : user.email!)
+            updateEmail(user, (email !== '') ? email! : user.email!)
             .then(() => {
                 setLoadingUpdateEmail(false);
                 setOpenAlert(true);
                 setAlert('Successfully updated email!');
+                setEmail(''); // clear input
             })
             .catch((error) => {
                 setLoadingUpdateEmail(false);
                 if(error.code === 'auth/requires-recent-login') {
                     router.push('/auth/reauthenticate?path=/settings/account');
+                } else if (error.code === 'auth/invalid-email') {
+                    setOpenAlert(true);
+                    setAlert('Error updating user account information: Email provided is invalid. Please try again.');
                 } else {
                     setOpenAlert(true);
                     setAlert(`Error updating user account information: ${error}`);
@@ -73,13 +79,6 @@ const EditAccount: NextPage = (): JSX.Element => {
             });
         }
     };
-
-    const LinkElement = styled(Link)(({
-        cursor: 'pointer',
-        textDecoration: 'none',
-        color: '#000',
-    }));
-
        
     if(loading){ return <LoadingPage /> }
     if(error) { return <ErrorPage /> }
@@ -142,8 +141,6 @@ const EditAccount: NextPage = (): JSX.Element => {
                             </Button>
                         </ButtonGroup>
                        
-                        <Typography level="h3">Edit Account Information:</Typography>
-
                         <Card sx={{ 
                             display: 'flex', 
                             flexDirection: 'column',
@@ -155,19 +152,27 @@ const EditAccount: NextPage = (): JSX.Element => {
                             py: 4,
                         }} 
                         variant='outlined'> 
-                            <Typography level="h4">Edit Display Name:</Typography>
+                            <Typography level="h4">
+                                Edit Display Name:
+                            </Typography>
+                                
                             <FormControl>
-                                <FormLabel>Full Name:</FormLabel>
+                                <FormLabel sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Tooltip title='Name must be longer than one character and must be appropriate.'>
+                                        <InfoOutlinedIcon sx={{ color: 'text.secondary', height: '15px' }} />
+                                    </Tooltip>
+                                    Full Name:
+                                </FormLabel>
                                 <Input 
                                     type='text'
-                                    value={credentials.displayName}
-                                    onChange={(e) => setCredentials({...credentials, displayName: e.target.value})} />
+                                    value={displayName}
+                                    onChange={(e) => setDisplayName(e.target.value)} />
                             </FormControl>       
                             
                             {(!loadingUpdateName) ? (
                                 <Button
                                     onClick={(e) => handleDisplayNameUpdate(e)}
-                                    disabled={credentials.displayName === '' && credentials.email === ''}
+                                    disabled={displayName === ''}
                                     variant='outlined'
                                     color='neutral'
                                     sx={{ display: 'inherit', alignSelf: 'flex-end', width: '200px'}}>
@@ -199,17 +204,22 @@ const EditAccount: NextPage = (): JSX.Element => {
                         variant='outlined'> 
                             <Typography level="h4">Edit Email:</Typography>      
                             <FormControl>
-                                <FormLabel>Email:</FormLabel>
+                                <FormLabel sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Tooltip title='Email must be in proper email form, i.e, email@emailprovider.com.'>
+                                        <InfoOutlinedIcon sx={{ color: 'text.secondary', height: '15px' }} />
+                                    </Tooltip>
+                                    Email:
+                                </FormLabel>
                                 <Input 
                                     type='email'
-                                    value={credentials.email}
-                                    onChange={(e) => setCredentials({...credentials, email: e.target.value})} />
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)} />
                             </FormControl> 
 
                             {(!loadingUpdateEmail) ? (
                                 <Button
                                     onClick={(e) => handleEmailUpdate(e)}
-                                    disabled={credentials.displayName === '' && credentials.email === ''}
+                                    disabled={email === ''}
                                     variant='outlined'
                                     color='neutral'
                                     sx={{ display: 'inherit', alignSelf: 'flex-end', width: '200px'}}>

@@ -2,7 +2,7 @@ import { auth, db } from "@/firebase/clientApp";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
-import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized, sortLogs } from '../../common/utils';
+import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized, sortLogs, chapterNameToChapter } from '../../common/utils';
 import { DocumentData, collection, getDocs, orderBy, query } from "firebase/firestore";
 import Header from "@/components/Header";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -193,7 +193,6 @@ const OverallProgress: React.FC<{
 
     const parsedChapterLogs: Array<ChapterLog> = JSON.parse(JSON.stringify(chapterLogs)); // FIXME: Find better way to parse
     const chapterNameToChapterLog = new Map(parsedChapterLogs.map((chapter: ChapterLog) => [chapter.name, chapter]));
-    const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
 
     const LinkElement = styled(Link)({
         cursor: 'pointer',
@@ -220,7 +219,7 @@ const OverallProgress: React.FC<{
                     {filteredChapters.map((chapter, index) => (
                         <Box key={index + chapter.number + chapter.name}>
                             <Box sx={{ p: 2 }}>
-                                <Box sx={{ display: 'flex', alignContent: 'center' }}>
+                                <Box sx={{ display: 'flex' }}>
                                     <Typography level='title-lg'>{chapter.number}. {chapter.name}</Typography>
                                     <Chip
                                         variant="soft"

@@ -1,12 +1,10 @@
 import { auth, db } from "@/firebase/clientApp";
-import { User, onAuthStateChanged, signOut } from "firebase/auth";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
-import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter } from '../../common/utils';
+import { ProgressLog, prettyPrintDate } from '../../common/utils';
 import { DocumentData, collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import Header from "@/components/Header";
-import { parse } from "path";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ErrorPage from "@/components/ErrorPage";
 import LoadingPage from "@/components/LoadingPage";
@@ -93,7 +91,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
                     </Container>
                 </Box>
             ) : ( 
-                <Typography sx={{ p: 2 }}>You do not have access to this page. <Link href='/'>Return home.</Link></Typography>
+                <Typography sx={{ p: 2 }}>You do not have access to this page. <NextLink href='/'>Return home.</NextLink></Typography>
             )}
         </CssVarsProvider>
     );

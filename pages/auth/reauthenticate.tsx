@@ -1,13 +1,12 @@
 import { auth } from "@/firebase/clientApp";
-import { Box, Button, CssVarsProvider, Dropdown, FormControl, FormLabel, Grid, Input, Link, ListDivider, Menu, MenuButton, MenuItem, Sheet, Typography, styled } from "@mui/joy";
+import { Box, Button, CssVarsProvider, FormControl, FormLabel, Grid, Input, Sheet, Typography, styled } from "@mui/joy";
 import { NextPage } from "next";
 import NextLink from 'next/link';
 import { useRouter } from "next/router";
-import { FormEventHandler, useEffect, useState } from "react";
-import { useAuthState, useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { FormEventHandler, useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 import SendIcon from '@mui/icons-material/Send';
 import { credentialsValid } from "@/common/utils";
-import AuthHeader from "@/components/AuthHeader";
 import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import ModeToggle from "@/components/ModeToggle";
 
@@ -73,11 +72,11 @@ const Reauthenticate: NextPage = (): JSX.Element => {
                         </LinkElement>
                     </Grid>
                     <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row", gap: 1 }}>
-                        <LinkHolder>
+                        {/* <LinkHolder>
                             <LinkElement href={path!.toString()}>
                                 <Typography>Go Back</Typography>
                             </LinkElement>
-                        </LinkHolder>
+                        </LinkHolder> */}
                         <ModeToggle />
                     </Grid>
                 </Grid>

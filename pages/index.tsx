@@ -20,7 +20,7 @@ const Home: NextPage = (): JSX.Element => {
         color: theme.vars.palette.text.secondary,
     }));
 
-    const LinkElement = styled(Link)(({
+    const LinkElement = styled(NextLink)(({
         cursor: 'pointer',
         textDecoration: 'none',
         '&:hover': {
@@ -100,13 +100,13 @@ const Home: NextPage = (): JSX.Element => {
                     A descriptive secondary text placeholder. Use it to explain your business
                     offer better.
                 </Typography>
-                <Link href='/auth/signup'>
+                <NextLink href='/auth/signup'>
                     <Button size="lg" endDecorator={<ArrowForward />}>
                     Get Started
                     </Button>
-                </Link>
+                </NextLink>
                 <Typography>
-                    Already a member? <LinkElement href='/auth/login'>Sign in</LinkElement>
+                    Already a user? <LinkElement href='/auth/login'>Sign in</LinkElement>
                 </Typography>
             </TwoSidedLayout>
 

@@ -2,7 +2,7 @@ import ErrorPage from "@/components/ErrorPage";
 import Header from "@/components/Header";
 import LoadingPage from "@/components/LoadingPage";
 import { auth } from "@/firebase/clientApp";
-import { Alert, Card, Container, CssVarsProvider, Typography, Link, styled, Button, Tooltip, Box, Avatar, AvatarGroup, CardActions, CardContent, Grid } from "@mui/joy";
+import { Alert, Card, Container, CssVarsProvider, Typography, Button, Tooltip, Box, CardActions, CardContent, Grid } from "@mui/joy";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -10,7 +10,6 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useEffect, useState } from "react";
 import IconButton from '@mui/joy/IconButton';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { FavoriteBorder } from "@mui/icons-material";
 
 const Landing: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);
@@ -92,7 +91,7 @@ const Landing: NextPage = (): JSX.Element => {
                     </Container>
                 </Box>
             ) : ( 
-                <Typography sx={{ p: 2 }}>You do not have access to this page. <Link href='/'>Return home.</Link></Typography>
+                <Typography sx={{ p: 2 }}>You do not have access to this page. <NextLink href='/'>Return home.</NextLink></Typography>
             )}
         </CssVarsProvider>
     );

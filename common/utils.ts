@@ -60,12 +60,11 @@ export const chapterAmountMemorized = (lastVerseCompleted: number, chapterName: 
   return ((lastVerseCompleted/verseCount)*100).toFixed(0);
 }
 
-const quranVerseCount = 6236;
+const quranVerseCount = 6236; // Without Bismillah
 
 export const totalAmountMemorized = (verseSum: number): number => {
   return parseInt(((verseSum/quranVerseCount)*100).toFixed(0));
 }
-
 
 export const get_today = () => new Date();
 

@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ErrorPage from "@/components/ErrorPage";
 import LoadingPage from "@/components/LoadingPage";
-import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet, Avatar, Grid, Divider, Badge, Card, styled, Modal, ModalClose, Alert, IconButton, FormControl, FormLabel, Input, Tooltip } from "@mui/joy";
+import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Card, Alert, IconButton, FormControl, FormLabel, Input, Tooltip } from "@mui/joy";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { updatePassword } from "firebase/auth";
 import SendIcon from '@mui/icons-material/Send';

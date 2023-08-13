@@ -88,7 +88,7 @@ const EditAccount: NextPage = (): JSX.Element => {
                 <Box> 
                     <Header />
                     <Container sx={{ mt: 3, mb: 5 }}>
-                    {(openAlert) ? (
+                        {(openAlert) ? (
                             <Alert 
                                 variant="soft" 
                                 sx={{ my: 2 }}

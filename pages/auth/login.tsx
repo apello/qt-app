@@ -1,5 +1,5 @@
 import { auth } from "@/firebase/clientApp";
-import { Box, Button, CssVarsProvider, FormControl, FormLabel, Grid, Input, Link, Sheet, Typography, styled } from "@mui/joy";
+import { Button, CssVarsProvider, FormControl, FormLabel, Input, Sheet, Typography } from "@mui/joy";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { FormEventHandler, useEffect, useState } from "react";
@@ -18,18 +18,21 @@ const Login: NextPage = (): JSX.Element => {
         user,
         loading,
         error
-    ] = useSignInWithEmailAndPassword(auth);
+    ] = useSignInWithEmailAndPassword(auth); // react-firebase-hook
 
     const router = useRouter();
 
-    // then
+    // .then() and .catch() does not work with signInWithEmailAndPassword react-firebase-hook
+    // Use loading and error values instead
+
+    // .then()
     useEffect(() => {
         if(!loading && user) {
             router.push('/landing')
         }
     },[loading, router, user]);
 
-    // catch
+    // .catch()
     useEffect(() => {
         if(error) {
             setMessage('Email/password do not exist! Please try again.');
@@ -40,6 +43,7 @@ const Login: NextPage = (): JSX.Element => {
     const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
 
+        // commons/utils
         if(credentialsValid(credentials)) {
             signInWithEmailAndPassword(credentials.email, credentials.password)
         }

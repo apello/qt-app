@@ -22,7 +22,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
     const [openModal, setOpenModal] = useState(false);
 
     const verifyEmail = () => {
-        if(user !== undefined && user !== null) {
+        if(user) {
             sendEmailVerification(user)
                 .then(() => {
                     setOpenAlert(true);

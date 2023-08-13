@@ -4,31 +4,37 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Chapter, ChapterLog, ProgressLog, chapterNameToChapter, chapters, get_today, prettyPrintDate } from '../../common/utils';
 import Header from "@/components/Header";
-import { DocumentData, addDoc, collection, doc, getDoc, getDocs, limit, onSnapshot, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { DocumentData, addDoc, collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ErrorPage from "@/components/ErrorPage";
 import LoadingPage from "@/components/LoadingPage";
-import { CssVarsProvider, Box, Typography, Container, Alert, IconButton, Breadcrumbs, Select, Option, Sheet, Card, Divider, FormControl, FormLabel, Button, Grid } from "@mui/joy";
+import { CssVarsProvider, Box, Typography, Container, Alert, IconButton, Breadcrumbs, Select, Option, Card, Divider, FormControl, FormLabel, Button, Grid } from "@mui/joy";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import SendIcon from '@mui/icons-material/Send';
 
 const TrackProgress: NextPage = (): JSX.Element => {
-    const [user, loading, error] = useAuthState(auth);
-    const [currentChapterLog, setCurrentChapterLog] = useState<ChapterLog | null>();
-    const [previousLog, setPreviousLog] = useState<ProgressLog | null>();
+    const [user, loading, error] = useAuthState(auth); // Create user value, loading, and error
+    const [currentChapterLog, setCurrentChapterLog] = useState<ChapterLog | null>(); // Current data for selected chapter
+    const [previousLog, setPreviousLog] = useState<ProgressLog | null>(); // Previous progress log for selected chapter
 
-    const [verseRange, setVerseRange] = useState({ startVerse: 1, endVerse: 1 });
-    const [readingType, setReadingType] = useState<string>('');
-    const [completed, setCompleted] = useState(false);
-    const [alert, setAlert] = useState<JSX.Element>();
-    const [openAlert, setOpenAlert] = useState(false);
+    const [verseRange, setVerseRange] = useState({ startVerse: 1, endVerse: 1 }); // Verse range (start verse, end verse) selected by user
+    const [readingType, setReadingType] = useState<string>(''); // Reading type (Memorization, Revision) selected by user
+    const [completed, setCompleted] = useState(false); // Chapter completion status selected by user
+    const [alert, setAlert] = useState<JSX.Element>(); // Alert message of success or error containing Link elements
+    const [openAlert, setOpenAlert] = useState(false); // Alert boolean
+    const [formLoading, setFormLoading] = useState(false); // Loading boolean for Log Progress button
 
-    const { query : { chapter } } = useRouter();
-    const params = (chapter !== null && chapter !== undefined) ? chapterNameToChapter.get(chapter!.toString()) : undefined;
+    const { query : { chapter } } = useRouter(); // Chapter name data sent the 'Track Progress' button on Overall Progress card
+    // Get chapter information from chapterNameToChapter Map object in commons/utils
+    const params = (chapter !== null && chapter !== undefined) ? chapterNameToChapter.get(chapter!.toString()) : undefined; 
+    // Set currentChapter equal to params, which is either undefined or contains the Chapter value given from the router
     const [currentChapter, setCurrentChapter] = useState<Chapter | undefined>(params);
 
+    // Download current chapter log information and put that information in currentChapterLog 
     useEffect(() => {
         const downloadCurrentChapterLog = () => {
+            // TODO: Check if operation works with just (currentChapter && user)
             if((currentChapter !== undefined && currentChapter !== null) 
             && (user !== undefined && user !== null)) {
                 getDoc(doc(db, `data/${user!.uid}/chapter`, `${currentChapter!.number}`))
@@ -45,11 +51,13 @@ const TrackProgress: NextPage = (): JSX.Element => {
         downloadCurrentChapterLog();
     },[currentChapter, user]);
 
+    // Download most recent log information on chapter and put that information in setPreviousLog 
     useEffect(() => {
         const downloadPreviousLog = () => {
-            if((currentChapter !== undefined && currentChapter !== null) 
+            if((currentChapter) 
             && (user !== undefined && user !== null)) {
                 let arr: DocumentData[] = [];
+                // Progress log where the log has the selected chapter name and reading type
                 getDocs(query(
                     collection(db, `data/${user!.uid}/log`), 
                     where('chapterName', '==', currentChapter.name),
@@ -58,6 +66,7 @@ const TrackProgress: NextPage = (): JSX.Element => {
                     limit(1)
                 ))
                 .then((logs) => {
+                    // Clean data up and set to setPreviousLog
                     logs.docs.map((doc) => arr.push(doc.data()));
                     let log = JSON.parse(JSON.stringify(arr[0]));
                     setPreviousLog(log);
@@ -71,7 +80,8 @@ const TrackProgress: NextPage = (): JSX.Element => {
         downloadPreviousLog();
     },[currentChapter, readingType, user]);
 
-    // Will change with autocomplete
+    // TODO: Change to autocomplete
+    // Sets value selected from select to currentChapter and clears previously selected values
     const handleChapterSearch = (newValue: string) => {
         const chapter = chapterNameToChapter.get(newValue);
         setCurrentChapter(chapter);
@@ -81,10 +91,18 @@ const TrackProgress: NextPage = (): JSX.Element => {
         setCompleted(false);
     };
 
+    // Entirely clears the form after successful submission
+    const clearForm = () => {
+        setCurrentChapter(undefined);
+        setVerseRange({...verseRange, startVerse: 1, endVerse: 1});
+        setPreviousLog(null);
+        setCompleted(false);
+        setReadingType('');
+    };
+
     const handleForm = () => {
-        // Do some validation to prevent user from spamming same range 
-        if((currentChapter !== undefined && currentChapter !== null)
-        && (user !== undefined && user !== null)) {
+        if(currentChapter && user) {
+            setFormLoading(true);
             Promise.all([
                 // If log for chapter already exists
                 (currentChapterLog !== undefined && currentChapterLog !== null) ? (
@@ -99,13 +117,16 @@ const TrackProgress: NextPage = (): JSX.Element => {
                         )
                     })
                 ) : (
+                    // If does not exist, create a new one
                     setDoc(doc(db, `data/${user!.uid}/chapter`, `${currentChapter!.number}`), {
+                        number: currentChapter.number,
                         name: currentChapter.name,
                         lastReviewed: get_today(),
                         lastVerseCompleted: (completed) ? currentChapter.verseCount : verseRange.endVerse
                     })
                 ),
                 addDoc(collection(db, `data/${user!.uid}/log`), {
+                    // Archived might be used later for something, still planning
                     chapterNumber: currentChapter!.number,
                     archived: false,
                     chapterName: currentChapter!.name,
@@ -138,12 +159,15 @@ const TrackProgress: NextPage = (): JSX.Element => {
                         ) : (verseRange.endVerse - verseRange.startVerse)+1,
                 })
                 .then(() => {
+                    clearForm();
+                    setFormLoading(false);
                     setOpenAlert(true);
                     setAlert(<>Successfuly logged progress! View <Link href='/progress/view-recent-progress'>log here</Link> or see your <Link href='/progress/view-all-progress'>overall progress here!</Link></>);
                 })
                 .catch((error) => {
-                    setOpenAlert(true);
+                    setFormLoading(false);
                     console.log(`Error updating logs: ${error}`);
+                    setOpenAlert(true);
                     setAlert(<>Error updating logs. Please try again.</>);
                 })
             ])
@@ -191,6 +215,7 @@ const TrackProgress: NextPage = (): JSX.Element => {
                             </Typography>
                         </Box>
 
+                        {/* TODO: Break the progress form into even smaller components */}
                         <ProgressForm
                             handleForm={handleForm}
                             handleChapterSearch={handleChapterSearch}
@@ -201,7 +226,8 @@ const TrackProgress: NextPage = (): JSX.Element => {
                             previousLog={previousLog}
                             setVerseRange={setVerseRange}
                             verseRange={verseRange}
-                            readingType={readingType} />
+                            readingType={readingType}
+                            formLoading={formLoading} />
 
                     </Container>
                 </Box>
@@ -223,7 +249,8 @@ const ProgressForm: React.FC<{
     previousLog: ProgressLog | null | undefined,
     setVerseRange: (_: any) => void,
     verseRange: { startVerse: number; endVerse: number; },
-    readingType: string
+    readingType: string,
+    formLoading: boolean
 }> = ({
     handleForm,
     handleChapterSearch,
@@ -234,11 +261,13 @@ const ProgressForm: React.FC<{
     previousLog,
     setVerseRange,
     verseRange,
-    readingType
+    readingType,
+    formLoading
 }) => {
     const chapterOptions = chapters.map((chapter) => {
         return <Option key={chapter.number+chapter.name} value={chapter.name}>{chapter.number}. {chapter.name}</Option>
     });
+
 
     return (
         <Box sx={{ mt: 3 }}>
@@ -269,6 +298,7 @@ const ProgressForm: React.FC<{
 
                     <Divider />
 
+                    {/* TODO: Just (currentChapter)? */}
                     {(currentChapter !== null && currentChapter !== undefined) ? (
                         <div>
                             <FormControl sx={{ pb: 2 }}>
@@ -299,9 +329,9 @@ const ProgressForm: React.FC<{
                                 {(previousLog !== undefined && previousLog !== null) ? (    
                                     <Card sx={{ border: 1, borderColor: '#bdbdbd', boxShadow: 'none', mb: 2  }}>
                                         <Typography level='title-sm'>
-                                        Previous Log for {currentChapter.name}: {' '}
-                                        {previousLog.chapterNumber}:{previousLog.startVerse} - {previousLog.chapterNumber}:{previousLog.endVerse}  {' '}
-                                        on {prettyPrintDate(previousLog.createdAt)}
+                                            Previous log for {currentChapter.name}: {' '}
+                                            {previousLog.chapterNumber}:{previousLog.startVerse} - {previousLog.chapterNumber}:{previousLog.endVerse}  {' '}
+                                            on {prettyPrintDate(previousLog.createdAt)}
                                         </Typography>
                                     </Card>
                                 ) : ( <></> )}
@@ -331,22 +361,38 @@ const ProgressForm: React.FC<{
                                     </Select>
                                 </FormControl>
             
-                                
-
                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end'}}>
-                                    <Button 
-                                        color='neutral'
-                                        variant='outlined'
-                                        onClick={handleForm} 
-                                        sx={{ height: '50px' }}
-                                        disabled={
-                                            verseRange.startVerse > verseRange.endVerse
-                                            || ((verseRange.startVerse === 1 && verseRange.endVerse === 1) 
-                                                && !completed)
-                                            || readingType === ''
-                                        }>
-                                        Log Progress
-                                    </Button>  
+                                    {(!formLoading) ? (
+                                         <Button 
+                                            color='neutral'
+                                            variant='outlined'
+                                            onClick={handleForm} 
+                                            sx={{ height: '50px' }}
+                                            disabled={
+                                                // Disabled:
+                                                // if start verse is greater than endverse
+                                                // if user has not changed the values from their default value
+                                                // if they did not select a reading type
+                                                verseRange.startVerse > verseRange.endVerse
+                                                || ((verseRange.startVerse === 1 && verseRange.endVerse === 1) 
+                                                    && !completed)
+                                                || readingType === ''
+                                            }
+                                        >
+                                            Log Progress
+                                        </Button>  
+                                    ) : (
+                                        <Button
+                                            color='neutral'
+                                            sx={{ height: '50px' }}
+                                            variant="solid"
+                                            loading
+                                            loadingPosition="end"
+                                            endDecorator={<SendIcon />}
+                                        >
+                                            Log Progress
+                                        </Button>
+                                    )}
                                 </Box> 
                             </Box>
                         </div>

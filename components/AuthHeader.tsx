@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, CssVarsProvider, Dropdown, Grid, ListDivider, Menu, MenuButton, MenuItem, Sheet, Typography, styled, Link } from "@mui/joy";
+import { Box, CssVarsProvider, Dropdown, Grid, ListDivider, Menu, MenuButton, MenuItem, Sheet, Typography, styled } from "@mui/joy";
 import NextLink from "next/link";
 import ModeToggle from "./ModeToggle";
 import MenuIcon from '@mui/icons-material/Menu';

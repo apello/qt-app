@@ -7,7 +7,7 @@ import { NextPage } from "next";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import IconButton from '@mui/joy/IconButton';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { FavoriteBorder } from "@mui/icons-material";
@@ -15,14 +15,13 @@ import { FavoriteBorder } from "@mui/icons-material";
 const Landing: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);
     const { query : { status } } = useRouter();
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
 
-    const LinkElement = styled(Link)(({
-        cursor: 'pointer',
-        textDecoration: 'none',
-        color: '#000',
-    }));
-
+    useEffect(() => {
+        if(status === 'new-user'){
+            setOpen(true);
+        }
+    },[status]);
 
     if(loading){ return <LoadingPage /> }
     if(error) { return <ErrorPage /> }
@@ -32,7 +31,7 @@ const Landing: NextPage = (): JSX.Element => {
                 <Box>
                     <Header />
                     <Container sx={{ my: 3 }}>
-                        {(status === 'new-user') ? (
+                        {(open) ? (
                             // Hide Alert
                             <Alert 
                                 variant="soft" 

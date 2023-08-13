@@ -16,9 +16,10 @@ import ModeToggle from "@/components/ModeToggle";
 const Reauthenticate: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState("")
+    const [message, setMessage] = useState("");
 
     const router = useRouter();
+    // TODO: Test path in instances of it being undefined
     const { query : { path } } = useRouter();
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
@@ -34,7 +35,7 @@ const Reauthenticate: NextPage = (): JSX.Element => {
                     .then(() => {
                         router.push(path!.toString()+'?reauthenticate=true'); // Back to original page
                     })
-                    .catch(() => {
+                    .catch((error) => {
                         setMessage('Password is not correct! Please try again.');
                         console.log(`Reauthentication failed: ${error}`);
                     })
@@ -52,6 +53,15 @@ const Reauthenticate: NextPage = (): JSX.Element => {
         },
     }));
 
+    const LinkHolder = styled(Sheet)(({ theme }) => ({
+        backgroundColor:
+          theme.palette.mode === 'dark' ? theme.palette.background.body : theme.palette.background.body,
+        ...theme.typography["body-md"],
+        padding: theme.spacing(1),
+        textAlign: 'center',
+        color: theme.vars.palette.text.secondary,
+    }));
+
     return (
         <CssVarsProvider>
             <Box sx={{ p: 3 }} >
@@ -63,6 +73,11 @@ const Reauthenticate: NextPage = (): JSX.Element => {
                         </LinkElement>
                     </Grid>
                     <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row", gap: 1 }}>
+                        <LinkHolder>
+                            <LinkElement href={path!.toString()}>
+                                <Typography>Go Back</Typography>
+                            </LinkElement>
+                        </LinkHolder>
                         <ModeToggle />
                     </Grid>
                 </Grid>

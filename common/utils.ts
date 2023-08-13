@@ -2,6 +2,7 @@ import { Key } from "react";
 
 export interface ChapterLog {
     map(arg0: (chapter: ChapterLog) => (string | ChapterLog)[]): Iterable<readonly [unknown, unknown]> | null | undefined;
+    number: number;
     name: string;
     lastVerseCompleted: number;
     lastReviewed: Date;
@@ -14,16 +15,16 @@ export interface Chapter {
 }
 
 export interface ProgressLog {
-    data: any;
-    id: Key | null | undefined;
-    chapterNumber: number;
-    chapterName: string;
-    verseAmount: number;
-    startVerse: number;
-    endVerse: number;
-    readingType: 'Memorization' | 'Revision';
-    createdAt: any;
-    archived: boolean;
+  data: any;
+  id: Key | null | undefined;
+  chapterNumber: number;
+  chapterName: string;
+  verseAmount: number;
+  startVerse: number;
+  endVerse: number;
+  readingType: 'Memorization' | 'Revision';
+  createdAt: any;
+  archived: boolean;
 }
 
 // Add more restrictions
@@ -54,10 +55,17 @@ export const prettyPrintNormalDate = (date: any): string => {
 //   return `${dateCopy.getUTCMonth() + 1}/${dateCopy.getUTCDate()}/${dateCopy.getUTCFullYear()}`;
 // }
 
-export const amountMemorized = (lastVerseCompleted: number, chapterName: string, chapterNameToChapter: Map<string, Chapter>): string => {
+export const chapterAmountMemorized = (lastVerseCompleted: number, chapterName: string, chapterNameToChapter: Map<string, Chapter>): string => {
   const verseCount = chapterNameToChapter.get(chapterName)!.verseCount;
   return ((lastVerseCompleted/verseCount)*100).toFixed(0);
 }
+
+const quranVerseCount = 6236;
+
+export const totalAmountMemorized = (verseSum: number): number => {
+  return parseInt(((verseSum/quranVerseCount)*100).toFixed(0));
+}
+
 
 export const get_today = () => new Date();
 
@@ -65,7 +73,11 @@ export const sortLogs = (sortOption: string, logs: Array<ProgressLog>): Array<Pr
   let sortedLogs: Array<ProgressLog> = [];
   switch(sortOption) {
     case 'alphabetical':
-      sortedLogs = logs.sort();
+      sortedLogs = logs.sort((a, b) => {
+        if(a.data.chapterName.toLowerCase() < b.data.chapterName.toLowerCase()) return -1;
+        if(a.data.chapterName.toLowerCase() > b.data.chapterName.toLowerCase()) return 1;
+        return 0;
+      });
       break;
     case 'verseAmount':
       sortedLogs = logs.sort((a, b) => { return b.data.verseAmount - a.data.verseAmount })
@@ -85,7 +97,7 @@ export const sortLogs = (sortOption: string, logs: Array<ProgressLog>): Array<Pr
       })
       break;
     case 'createdAt':
-      sortedLogs = logs.sort((a, b) => { return b.data.createdAt - a.data.createdAt })
+      sortedLogs = logs.sort((a, b) => { return a.data.createdAt - b.data.createdAt })
       break;
     default: 
       sortedLogs = logs.sort();

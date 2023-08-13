@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
-import { Box, Typography, Input, Button, IconButton, Alert } from "@mui/joy";
+import { Box, Typography, Button, IconButton, Alert } from "@mui/joy";
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import { User, updateProfile } from "firebase/auth";
 import { storage } from "@/firebase/clientApp";
@@ -31,7 +31,6 @@ const Dropzone: React.FC<{ user: User }> = ({ user }): JSX.Element => {
     }, []);
 
     // Dropzone configurations.
-    // TODO: Change to take PDFs
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop,
         accept: {
             'image/*': ['.jpeg', '.jpg', '.png'],
@@ -49,11 +48,11 @@ const Dropzone: React.FC<{ user: User }> = ({ user }): JSX.Element => {
         setRejected([])
     }
 
-    // Upload file using uploadDocumentation
+
     const handleUpload = async (e: React.FormEvent<HTMLFormElement> ) => {
         e.preventDefault();
 
-        const file = files[0];
+        const file = files[0]; // Dropdown disabled after one file is uploaded
         if(user && files) {
             setLoading(true);
             await uploadBytes(ref(storage, `${user.uid}.png`), file)
@@ -72,21 +71,21 @@ const Dropzone: React.FC<{ user: User }> = ({ user }): JSX.Element => {
                                 })
                                 .catch((error) => {
                                     setLoading(false);
-                                    setAlert('Error updating profile picture. Please try again.');
+                                    setAlert(`Error updating profile picture: ${error}`);
                                     setOpenAlert(true);
                                     console.log(`Could not set photo URL: ${error}`)
                                 })
                         })  
                         .catch((error) => {
                             setLoading(false);
-                            setAlert('Error updating profile picture. Please try again.');
+                            setAlert(`Error updating profile picture: ${error}`);
                             setOpenAlert(true);
                             console.log(`Download failed: ${error}`);
                         })
                 })
                 .catch((error) => {
                     setLoading(false);
-                    setAlert('Error updating profile picture. Please try again.');
+                    setAlert(`Error updating profile picture: ${error}`);
                     setOpenAlert(true);
                     console.log(`Upload failed: ${error}`)
                 })
@@ -143,8 +142,6 @@ const Dropzone: React.FC<{ user: User }> = ({ user }): JSX.Element => {
                         <Typography level='title-sm'>Drop image here, or click to select image.</Typography>
                     )}
                 </Box>
-
-            
                 <Box sx={{ pt: 3 }}>
                     {files.map((file: Blob, index: number) =>
                         <div key={file.name+index}>
@@ -177,11 +174,8 @@ const Dropzone: React.FC<{ user: User }> = ({ user }): JSX.Element => {
                         </div>
                     )}
                 </Box>
-
             </form>
         </Box>
-
-
     )
 };
 

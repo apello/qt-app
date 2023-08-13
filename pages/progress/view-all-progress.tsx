@@ -2,7 +2,7 @@ import { auth, db } from "@/firebase/clientApp";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
-import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized, sortLogs, chapterNameToChapter } from '../../common/utils';
+import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, sortLogs, chapterNameToChapter, chapterAmountMemorized, totalAmountMemorized } from '../../common/utils';
 import { DocumentData, collection, getDocs, orderBy, query } from "firebase/firestore";
 import Header from "@/components/Header";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -17,11 +17,12 @@ const ViewProgress: NextPage = (): JSX.Element => {
     const [logs, setLogs] = useState<Array<DocumentData>>();
     const [chapterLogs, setChapterLogs] = useState<Array<DocumentData>>();
     const [sortOption, setSortOption] = useState('alphabetical');
+    const [overallProgress, setOverallProgress] = useState<number>(0);
 
     useEffect(() => {
         const downloadProgressLogs = () => {
             let arr: DocumentData[] = [];
-            if(user !== undefined && user !== null) {
+            if(user) {
                 getDocs(collection(db, `data/${user!.uid}`, 'log'))
                 .then((logs) => {
                     logs.docs.map((doc) => arr.push({data: doc.data(), id: doc.id}))
@@ -36,7 +37,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
 
          const downloadChapterLogs = () => {
             let arr: DocumentData[] = [];
-            if(user !== undefined && user !== null) {
+            if(user) {
                 getDocs(collection(db, `data/${user!.uid}`, 'chapter'))
                 .then((logs) => {
                     // logs.docs.map((doc) => arr.push({data: doc.data(), id: doc.id}))
@@ -52,6 +53,17 @@ const ViewProgress: NextPage = (): JSX.Element => {
         downloadChapterLogs();
         downloadProgressLogs();
     },[user]);
+
+    // Verify if count is correct
+    useEffect(() => {
+        if(chapterLogs){
+            let parsedChapterLogs: Array<ChapterLog> = JSON.parse(JSON.stringify(chapterLogs));
+            let sum = parsedChapterLogs.reduce((previous, current) => {
+                return previous + current.lastVerseCompleted;
+            },0);
+            setOverallProgress(totalAmountMemorized(sum));
+        }
+    },[chapterLogs])
     
     if(loading){ return <LoadingPage /> }
     if(error) { return <ErrorPage /> }
@@ -98,7 +110,8 @@ const ViewProgress: NextPage = (): JSX.Element => {
                             <OverallProgress   
                                 setSearchText={setSearchText}
                                 searchText={searchText}
-                                chapterLogs={chapterLogs ?? []} />
+                                chapterLogs={chapterLogs ?? []} 
+                                overallProgress={overallProgress} />
                         </Grid>
                     </Container>
                 </Box>
@@ -122,10 +135,11 @@ const AllProgressTable: React.FC<{
         (log: ProgressLog) => log.data.chapterName.toLowerCase().indexOf(filterText.toLowerCase()) !== -1
     );
     const sortedLogs = sortLogs(sortOption, filteredLogs);
-    
+
     return (
         <Grid sm={12} md={7.5}>
-            {(parsedLogs !== undefined) ? (
+            {/* TODO: Make loading appear */}
+            {(logs) ? (
                 <Sheet sx={{ p: 3, borderRadius: '10px' }} variant='outlined'> 
                     <Box sx={{ display: 'flex', alignItems:'center', py: 2,  gap: 3 }}>
                         <Input 
@@ -184,15 +198,16 @@ const AllProgressTable: React.FC<{
 const OverallProgress: React.FC<{ 
     setSearchText: (_: string) => void, 
     searchText: string,
-    chapterLogs: Array<DocumentData>
- }> = ({ setSearchText, searchText, chapterLogs }) => {
+    chapterLogs: Array<DocumentData>,
+    overallProgress: number
+ }> = ({ setSearchText, searchText, chapterLogs, overallProgress }) => {
 
     const filteredChapters = chapters.filter(
         chapter => chapter.name.toLowerCase().indexOf(searchText.toLowerCase()) !== -1
     );
 
     const parsedChapterLogs: Array<ChapterLog> = JSON.parse(JSON.stringify(chapterLogs)); // FIXME: Find better way to parse
-    const chapterNameToChapterLog = new Map(parsedChapterLogs.map((chapter: ChapterLog) => [chapter.name, chapter]));
+    const chapterNumberToChapterLog = new Map(parsedChapterLogs.map((chapter: ChapterLog) => [chapter.number, chapter]));
 
     const LinkElement = styled(Link)({
         cursor: 'pointer',
@@ -207,6 +222,17 @@ const OverallProgress: React.FC<{
             <Card variant='outlined' sx={{ boxShadow: 'none', maxHeight: '90vh' }}>
                 <Box sx={{ py: 2 }}>
                     <Typography level='h2' sx={{ mb: 2 }}>Overall Progress</Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3, py:1, boxSizing: 'border-box' }}>
+                        <LinearProgress 
+                            determinate 
+                            value={overallProgress} />
+
+                        <Typography level='title-sm'>{`${overallProgress}% memorized`}</Typography>
+                    </Box>
+                </Box>
+                <Divider />
+
+                <Box sx={{ py: 1 }}>
                     <Input 
                         type='text' 
                         placeholder='Search chapters here:'
@@ -215,50 +241,52 @@ const OverallProgress: React.FC<{
 
                 <Divider />
 
-                <Box sx={{ overflowY: 'scroll', p: 0 }}>
-                    {filteredChapters.map((chapter, index) => (
-                        <Box key={index + chapter.number + chapter.name}>
-                            <Box sx={{ p: 2 }}>
-                                <Box sx={{ display: 'flex' }}>
-                                    <Typography level='title-lg'>{chapter.number}. {chapter.name}</Typography>
-                                    <Chip
-                                        variant="soft"
-                                        sx={{ ml: 1 }}>
-                                        <NextLink 
-                                            href={{
-                                                pathname:"track-progress",
-                                                query: {
-                                                    chapter: chapter.name
-                                                }
-                                            }}
-                                        >
-                                            <LinkElement overlay>Track Progress</LinkElement>
-                                        </NextLink>
-                                    </Chip>
-                                </Box>
-                                <Typography level='title-sm' sx={{ mt: 2 }}>
-                                    {(chapterNameToChapterLog.get(chapter.name) !== undefined ? (
-                                        'Last reviewed: ' + prettyPrintDate(chapterNameToChapterLog.get(chapter.name)!.lastReviewed)  // Create lastReviewedDate for specific data on days and weeks
-                                    ) : ( 'Never reviewed' ))}
-                                </Typography>
-
-                                {(chapterNameToChapterLog.get(chapter.name) !== undefined ? (
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3, py: 2, boxSizing: 'border-box' }}>
-                                        <LinearProgress 
-                                            determinate 
-                                            value={
-                                                parseInt(amountMemorized(chapterNameToChapterLog.get(chapter.name)!.lastVerseCompleted, chapter.name, chapterNameToChapter))
-                                        } />
-
-                                        <Typography level='title-sm'>
-                                            {amountMemorized(chapterNameToChapterLog.get(chapter.name)!.lastVerseCompleted, chapter.name, chapterNameToChapter)+ '% memorized'}
+                <Box sx={{ overflowY: 'scroll' }}>
+                    {(filteredChapters.length > 0) ? (
+                        <Box>
+                            {filteredChapters.map((chapter, index) => (
+                                <Box key={index + chapter.number + chapter.name}>
+                                    <Box sx={{ p: 2 }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <Typography level='title-lg'>{chapter.number}. {chapter.name}</Typography>
+                                            <Chip
+                                                variant="soft">
+                                                <NextLink 
+                                                    href={{
+                                                        pathname:"track-progress",
+                                                        query: {
+                                                            chapter: chapter.name
+                                                        }}}>
+                                                    <LinkElement overlay>Track Progress</LinkElement>
+                                                </NextLink>
+                                            </Chip>
+                                        </Box>
+                                        <Typography level='title-sm' sx={{ mt: 2 }}>
+                                            {(chapterNumberToChapterLog.get(chapter.number) !== undefined ? (
+                                                'Last reviewed: ' + prettyPrintDate(chapterNumberToChapterLog.get(chapter.number)!.lastReviewed)  // Create lastReviewedDate for specific data on days and weeks
+                                            ) : ( 'Never reviewed' ))}
                                         </Typography>
+
+                                        {(chapterNumberToChapterLog.get(chapter.number) !== undefined ? (
+                                            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3, py: 2, boxSizing: 'border-box' }}>
+                                                <LinearProgress 
+                                                    determinate 
+                                                    value={
+                                                        parseInt(chapterAmountMemorized(chapterNumberToChapterLog.get(chapter.number)!.lastVerseCompleted, chapter.name, chapterNameToChapter))
+                                                    } 
+                                                />
+
+                                                <Typography level='title-sm'>
+                                                    {chapterAmountMemorized(chapterNumberToChapterLog.get(chapter.number)!.lastVerseCompleted, chapter.name, chapterNameToChapter)+ '% memorized'}
+                                                </Typography>
+                                            </Box>
+                                        ) : ( '' ))}
                                     </Box>
-                                ) : ( '' ))}
-                            </Box>
-                            {(index !== filteredChapters.length-1) ? <Divider /> : <></> }
+                                    {(index !== filteredChapters.length-1) ? <Divider /> : <></> }
+                                </Box>
+                            ))}
                         </Box>
-                    ))}
+                    ) : ( <Typography sx={{ textAlign: 'center', py: 1 }}>No logs</Typography> )}
                 </Box>
             </Card>
         </Grid>

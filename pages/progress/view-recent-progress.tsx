@@ -3,7 +3,7 @@ import { User, onAuthStateChanged, signOut } from "firebase/auth";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
-import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter, amountMemorized } from '../../common/utils';
+import { chapters, ProgressLog, prettyPrintDate, ChapterLog, Chapter } from '../../common/utils';
 import { DocumentData, collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import Header from "@/components/Header";
 import { parse } from "path";
@@ -13,17 +13,18 @@ import LoadingPage from "@/components/LoadingPage";
 import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet } from "@mui/joy";
 
 const ViewProgress: NextPage = (): JSX.Element => {
-    const [user, loading, error] = useAuthState(auth);
-    const [logs, setLogs] = useState<Array<DocumentData>>();
+    const [user, loading, error] = useAuthState(auth); // User data
+    const [logs, setLogs] = useState<Array<DocumentData>>(); // Logs from db
 
     // Define these
-    const [memorizationLogs, setMemorizationLogs] = useState<any>();
+    const [memorizationLogs, setMemorizationLogs] = useState<any>(); 
     const [revisionLogs, setRevisionLogs] = useState<any>();
 
+    // Download the logs from the db in DocumentData[] type
     useEffect(() => {
         const downloadProgressLogs = () => {
             let arr: DocumentData[] = [];
-            if(user !== undefined && user !== null) {
+            if(user) {
                 getDocs(query(collection(db, `data/${user!.uid}`, 'log'), limit(15), orderBy('createdAt', 'desc')))
                 .then((logs) => {
                     logs.docs.map((doc) => arr.push({data: doc.data(), id: doc.id}))
@@ -39,8 +40,9 @@ const ViewProgress: NextPage = (): JSX.Element => {
         downloadProgressLogs();
     },[user]);
 
+    // Process data and separate it into reading types
     useEffect(() => {
-        if(logs !== undefined && logs !== null) {
+        if(logs) {
             const parsedLogs = JSON.parse(JSON.stringify(logs));
             setMemorizationLogs(
                 parsedLogs!.filter((log: ProgressLog) => log.data.readingType === 'Memorization')

@@ -1,18 +1,14 @@
-import { auth, db, storage } from "@/firebase/clientApp";
+import { auth } from "@/firebase/clientApp";
 import { NextPage } from "next";
 import NextLink from "next/link";
-import { useEffect, useState } from "react";
-import { prettyPrintNormalDate } from '../../common/utils';
+import { useState } from "react";
 import Header from "@/components/Header";
 import { useAuthState } from "react-firebase-hooks/auth";
 import ErrorPage from "@/components/ErrorPage";
 import LoadingPage from "@/components/LoadingPage";
-import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Table, Sheet, Avatar, Grid, Divider, Badge, Card, styled, Modal, ModalClose, Alert, IconButton, FormControl, FormLabel, Input } from "@mui/joy";
-import EditIcon from '@mui/icons-material/Edit';
+import { CssVarsProvider, Box, Container, Typography, Breadcrumbs, ButtonGroup, Link, Button, Card, Alert, IconButton } from "@mui/joy";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { updateProfile, updateEmail } from "firebase/auth";
-import SendIcon from '@mui/icons-material/Send';
-import { useRouter } from "next/router";
+
 
 const Goals: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);

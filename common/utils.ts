@@ -1,30 +1,38 @@
 import { Key } from "react";
 
-export interface ChapterLog {
-    map(arg0: (chapter: ChapterLog) => (string | ChapterLog)[]): Iterable<readonly [unknown, unknown]> | null | undefined;
-    number: number;
-    name: string;
-    lastVerseCompleted: number;
-    lastReviewed: Date;
-}
-
 export interface Chapter {
     number: number;
     name: string;
     verseCount: number;
 }
 
+export interface ChapterLog {
+  map(arg0: (chapter: ChapterLog) => (string | ChapterLog)[]): Iterable<readonly [unknown, unknown]> | null | undefined;
+  number: number;
+  name: string;
+  lastVerseCompleted: number;
+  lastReviewed: Date;
+}
+
 export interface ProgressLog {
   data: any;
   id: Key | null | undefined;
-  chapterNumber: number;
-  chapterName: string;
+  number: number;
+  chapterNumber: string;
   verseAmount: number;
   startVerse: number;
   endVerse: number;
   readingType: 'Memorization' | 'Revision';
   createdAt: any;
   archived: boolean;
+}
+
+export interface PartLog {
+  data: any;
+  id: Key | null | undefined;
+  number: string;
+  verseAmount: number;
+  createdAt: any;
 }
 
 // Add more restrictions
@@ -55,8 +63,8 @@ export const prettyPrintNormalDate = (date: any): string => {
 //   return `${dateCopy.getUTCMonth() + 1}/${dateCopy.getUTCDate()}/${dateCopy.getUTCFullYear()}`;
 // }
 
-export const chapterAmountMemorized = (lastVerseCompleted: number, chapterName: string, chapterNameToChapter: Map<string, Chapter>): string => {
-  const verseCount = chapterNameToChapter.get(chapterName)!.verseCount;
+export const chapterAmountMemorized = (lastVerseCompleted: number, name: string, chapterNameToChapter: Map<string, Chapter>): string => {
+  const verseCount = chapterNameToChapter.get(name)!.verseCount;
   return ((lastVerseCompleted/verseCount)*100).toFixed(0);
 }
 
@@ -107,6 +115,7 @@ export const sortLogs = (sortOption: string, logs: Array<ProgressLog>): Array<Pr
 };
 
 // Surah and Juz objects
+// Generated using ChatGPT, verified using Quran.com
 
 export const chapters = [
     {
@@ -684,246 +693,1247 @@ export const chapters = [
     
 export const parts = [
   {
-    "partNumber": 1,
-    "startChapter": 1,
-    "startVerse": 1,
-    "endChapter": 2,
-    "endVerse": 141,
-    "verseCount": 141
+    "juzNumber": 1,
+    "surahs": [
+      {
+        "number": 1,
+        "name": "Al-Fatiha",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 7
+        }
+      },
+      {
+        "number": 2,
+        "name": "Al-Baqarah",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 141
+        }
+      }
+    ]
   },
   {
-    "partNumber": 2,
-    "startChapter": 2,
-    "startVerse": 142,
-    "endChapter": 2,
-    "endVerse": 252,
-    "verseCount": 111
+    "juzNumber": 2,
+    "surahs": [
+      {
+        "number": 2,
+        "name": "Al-Baqarah",
+        "verseRange": {
+          "startVerse": 142,
+          "endVerse": 252
+        }
+      }
+    ]
   },
   {
-    "partNumber": 3,
-    "startChapter": 2,
-    "startVerse": 253,
-    "endChapter": 3,
-    "endVerse": 92,
-    "verseCount": 85
+    "juzNumber": 3,
+    "surahs": [
+      {
+        "number": 2,
+        "name": "Al-Baqarah",
+        "verseRange": {
+          "startVerse": 253,
+          "endVerse": 286
+        }
+      },
+      {
+        "number": 3,
+        "name": "Aal-E-Imran",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 91
+        }
+      }
+    ]
   },
   {
-    "partNumber": 4,
-    "startChapter": 3,
-    "startVerse": 93,
-    "endChapter": 4,
-    "endVerse": 23,
-    "verseCount": 89
+    "juzNumber": 4,
+    "surahs": [
+      {
+        "number": 3,
+        "name": "Aal-E-Imran",
+        "verseRange": {
+          "startVerse": 92,
+          "endVerse": 200
+        }
+      },
+      {
+        "number": 4,
+        "name": "An-Nisa",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 23
+        }
+      }
+    ]
   },
   {
-    "partNumber": 5,
-    "startChapter": 4,
-    "startVerse": 24,
-    "endChapter": 4,
-    "endVerse": 147,
-    "verseCount": 124
+    "juzNumber": 5,
+    "surahs": [
+      {
+        "number": 4,
+        "name": "An-Nisa",
+        "verseRange": {
+          "startVerse": 24,
+          "endVerse": 147
+        }
+      }
+    ]
   },
   {
-    "partNumber": 6,
-    "startChapter": 4,
-    "startVerse": 148,
-    "endChapter": 5,
-    "endVerse": 82,
-    "verseCount": 113
+    "juzNumber": 6,
+    "surahs": [
+      {
+        "number": 4,
+        "name": "An-Nisa",
+        "verseRange": {
+          "startVerse": 148,
+          "endVerse": 176
+        }
+      },
+      {
+        "number": 5,
+        "name": "Al-Ma'idah",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 82
+        }
+      },
+    ]
   },
   {
-    "partNumber": 7,
-    "startChapter": 5,
-    "startVerse": 83,
-    "endChapter": 6,
-    "endVerse": 110,
-    "verseCount": 28
+    "juzNumber": 7,
+    "surahs": [
+      {
+        "number": 5,
+        "name": "Al-Ma'idah",
+        "verseRange": {
+          "startVerse": 83,
+          "endVerse": 120
+        }
+      },
+      {
+        "number": 6,
+        "name": "Al-An'am",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 110
+        }
+      }
+    ]
   },
   {
-    "partNumber": 8,
-    "startChapter": 6,
-    "startVerse": 111,
-    "endChapter": 7,
-    "endVerse": 87,
-    "verseCount": 150
+    "juzNumber": 8,
+    "surahs": [
+       {
+        "number": 6,
+        "name": "Al-An'am",
+        "verseRange": {
+          "startVerse": 111,
+          "endVerse": 165
+        }
+      },
+      {
+        "number": 7,
+        "name": "Al-A'raf",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 87
+        }
+      }
+    ]
   },
   {
-    "partNumber": 9,
-    "startChapter": 7,
-    "startVerse": 88,
-    "endChapter": 8,
-    "endVerse": 40,
-    "verseCount": 93
+    "juzNumber": 9,
+    "surahs": [
+      {
+        "number": 7,
+        "name": "Al-A'raf",
+        "verseRange": {
+          "startVerse": 88,
+          "endVerse": 206
+        }
+      },
+      {
+        "number": 8,
+        "name": "Al-Anfal",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 40
+        }
+      }
+    ]
   },
   {
-    "partNumber": 10,
-    "startChapter": 8,
-    "startVerse": 41,
-    "endChapter": 9,
-    "endVerse": 92,
-    "verseCount": 52
+    "juzNumber": 10,
+    "surahs": [
+      {
+        "number": 8,
+        "name": "Al-Anfal",
+        "verseRange": {
+          "startVerse": 41,
+          "endVerse": 75
+        }
+      },
+      {
+        "number": 9,
+        "name": "At-Tawbah",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 93
+        }
+      }
+    ]
   },
   {
-    "partNumber": 11,
-    "startChapter": 9,
-    "startVerse": 93,
-    "endChapter": 10,
-    "endVerse": 109,
-    "verseCount": 59
+    "juzNumber": 11,
+    "surahs": [
+      {
+        "number": 9,
+        "name": "At-Tawbah",
+        "verseRange": {
+          "startVerse": 94,
+          "endVerse": 129
+        }
+      },
+      {
+        "number": 10,
+        "name": "Yunus",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 109
+        }
+      },
+      {
+        "number": 11,
+        "name": "Hud",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 5
+        }
+      },
+    ]
   },
   {
-    "partNumber": 12,
-    "startChapter": 10,
-    "startVerse": 110,
-    "endChapter": 11,
-    "endVerse": 5,
-    "verseCount": 123
+    "juzNumber": 12,
+    "surahs": [
+      {
+        "number": 11,
+        "name": "Hud",
+        "verseRange": {
+          "startVerse": 6,
+          "endVerse": 123
+        }
+      },
+      {
+        "number": 12,
+        "name": "Yusuf",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 52
+        }
+      },
+    ]
   },
   {
-    "partNumber": 13,
-    "startChapter": 11,
-    "startVerse": 6,
-    "endChapter": 12,
-    "endVerse": 52,
-    "verseCount": 103
+    "juzNumber": 13,
+    "surahs": [
+      {
+        "number": 12,
+        "name": "Yusuf",
+        "verseRange": {
+          "startVerse": 53,
+          "endVerse": 111
+        }
+      },
+      {
+        "number": 13,
+        "name": "Ar-Ra'd",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 43
+        }
+      },
+      {
+        "number": 14,
+        "name": "Ibrahim",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 52
+        }
+      },
+      {
+        "number": 15,
+        "name": "Al-Hijr",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 1
+        }
+      }
+    ]
   },
   {
-    "partNumber": 14,
-    "startChapter": 12,
-    "startVerse": 53,
-    "endChapter": 15,
-    "endVerse": 99,
-    "verseCount": 91
+    "juzNumber": 14,
+    "surahs": [
+      {
+        "number": 15,
+        "name": "Al-Hijr",
+        "verseRange": {
+          "startVerse": 2,
+          "endVerse": 99
+        }
+      },
+      {
+        "number": 16,
+        "name": "An-Nahl",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 128
+        }
+      }
+    ]
   },
   {
-    "partNumber": 15,
-    "startChapter": 15,
-    "startVerse": 100,
-    "endChapter": 16,
-    "endVerse": 50,
-    "verseCount": 111
+    "juzNumber": 15,
+    "surahs": [
+      {
+        "number": 17,
+        "name": "Al-Isra",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 111
+        }
+      },
+      {
+        "number": 18,
+        "name": "Al-Kahf",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 74
+        }
+      },
+    ]
   },
   {
-    "partNumber": 16,
-    "startChapter": 16,
-    "startVerse": 51,
-    "endChapter": 18,
-    "endVerse": 74,
-    "verseCount": 93
+    "juzNumber": 16,
+    "surahs": [
+      {
+        "number": 18,
+        "name": "Al-Kahf",
+        "verseRange": {
+          "startVerse": 75,
+          "endVerse": 110
+        }
+      },
+      {
+        "number": 19,
+        "name": "Maryam",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 98
+        }
+      },
+      {
+        "number": 20,
+        "name": "Ta-Ha",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 135
+        }
+      },
+    ]
   },
   {
-    "partNumber": 17,
-    "startChapter": 18,
-    "startVerse": 75,
-    "endChapter": 20,
-    "endVerse": 130,
-    "verseCount": 56
+    "juzNumber": 17,
+    "surahs": [
+      {
+        "number": 21,
+        "name": "Al-Anbiya",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 112
+        }
+      },
+      {
+        "number": 22,
+        "name": "Al-Hajj",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 78
+        }
+      }
+    ]
   },
   {
-    "partNumber": 18,
-    "startChapter": 20,
-    "startVerse": 131,
-    "endChapter": 22,
-    "endVerse": 78,
-    "verseCount": 63
+    "juzNumber": 18,
+    "surahs": [
+      {
+        "number": 23,
+        "name": "Al-Mu'minun",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 118
+        }
+      },
+      {
+        "number": 24,
+        "name": "An-Nur",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 64
+        }
+      },
+      {
+        "number": 25,
+        "name": "Al-Furqan",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 20
+        }
+      }
+    ]
   },
   {
-    "partNumber": 19,
-    "startChapter": 23,
-    "startVerse": 1,
-    "endChapter": 25,
-    "endVerse": 20,
-    "verseCount": 95
+    "juzNumber": 19,
+    "surahs": [
+      {
+        "number": 25,
+        "name": "Al-Furqan",
+        "verseRange": {
+          "startVerse": 21,
+          "endVerse": 77
+        }
+      },
+      {
+        "number": 26,
+        "name": "Ash-Shu'ara",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 227
+        }
+      },
+      {
+        "number": 27,
+        "name": "An-Naml",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 59
+        }
+      }
+    ]
   },
   {
-    "partNumber": 20,
-    "startChapter": 25,
-    "startVerse": 21,
-    "endChapter": 27,
-    "endVerse": 55,
-    "verseCount": 77
+    "juzNumber": 20,
+    "surahs": [
+      {
+        "number": 27,
+        "name": "An-Naml",
+        "verseRange": {
+          "startVerse": 60,
+          "endVerse": 93
+        }
+      },
+      {
+        "number": 28,
+        "name": "Al-Qasas",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 88
+        }
+      },
+      {
+        "number": 29,
+        "name": "Al-Ankabut",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 44
+        }
+      }
+    ]
   },
   {
-    "partNumber": 21,
-    "startChapter": 27,
-    "startVerse": 56,
-    "endChapter": 29,
-    "endVerse": 45,
-    "verseCount": 96
+    "juzNumber": 21,
+    "surahs": [
+      {
+        "number": 29,
+        "name": "Al-Ankabut",
+        "verseRange": {
+          "startVerse": 45,
+          "endVerse": 69
+        }
+      },
+      {
+        "number": 30,
+        "name": "Ar-Rum",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 60
+        }
+      },
+      {
+        "number": 31,
+        "name": "Luqman",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 34
+        }
+      },
+      {
+        "number": 32,
+        "name": "As-Sajda",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 30
+        }
+      },
+      {
+        "number": 33,
+        "name": "Al-Ahzab",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 30
+        }
+      }
+    ]
   },
   {
-    "partNumber": 22,
-    "startChapter": 29,
-    "startVerse": 46,
-    "endChapter": 33,
-    "endVerse": 30,
-    "verseCount": 69
+    "juzNumber": 22,
+    "surahs": [
+      {
+        "number": 33,
+        "name": "Al-Ahzab",
+        "verseRange": {
+          "startVerse": 31,
+          "endVerse": 73
+        }
+      },
+      {
+        "number": 34,
+        "name": "Saba",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 54
+        }
+      },
+      {
+        "number": 35,
+        "name": "Fatir",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 45
+        }
+      },
+      {
+        "number": 36,
+        "name": "Ya-Sin",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 21
+        }
+      }
+    ]
   },
   {
-    "partNumber": 23,
-    "startChapter": 33,
-    "startVerse": 31,
-    "endChapter": 36,
-    "endVerse": 27,
-    "verseCount": 53
+    "juzNumber": 23,
+    "surahs": [
+      {
+        "number": 36,
+        "name": "Ya-Sin",
+        "verseRange": {
+          "startVerse": 22,
+          "endVerse": 83
+        }
+      },
+      {
+        "number": 37,
+        "name": "As-Saffat",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 182
+        }
+      },
+      {
+        "number": 38,
+        "name": "Sad",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 88
+        }
+      },
+      {
+        "number": 39,
+        "name": "Az-Zumar",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 31
+        }
+      }
+    ]
   },
   {
-    "partNumber": 24,
-    "startChapter": 36,
-    "startVerse": 28,
-    "endChapter": 39,
-    "endVerse": 31,
-    "verseCount": 60
+    "juzNumber": 24,
+    "surahs": [
+      {
+        "number": 39,
+        "name": "Az-Zumar",
+        "verseRange": {
+          "startVerse": 32,
+          "endVerse": 75
+        }
+      },
+      {
+        "number": 40,
+        "name": "Ghafir",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 85
+        }
+      },
+      {
+        "number": 41,
+        "name": "Fussilat",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 46
+        }
+      },
+    ]
   },
   {
-    "partNumber": 25,
-    "startChapter": 39,
-    "startVerse": 32,
-    "endChapter": 41,
-    "endVerse": 46,
-    "verseCount": 35
+    "juzNumber": 25,
+    "surahs": [
+      {
+        "number": 41,
+        "name": "Fussilat",
+        "verseRange": {
+          "startVerse": 47,
+          "endVerse": 54
+        }
+      },
+      {
+        "number": 42,
+        "name": "Ash-Shura",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 53
+        }
+      },
+      {
+        "number": 43,
+        "name": "Az-Zukhruf",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 89
+        }
+      },
+      {
+        "number": 44,
+        "name": "Ad-Dukhan",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 59
+        }
+      },
+      {
+        "number": 45,
+        "name": "Al-Jathiya",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 37
+        }
+      },
+    ]
   },
   {
-    "partNumber": 26,
-    "startChapter": 41,
-    "startVerse": 47,
-    "endChapter": 45,
-    "endVerse": 37,
-    "verseCount": 38
+    "juzNumber": 26,
+    "surahs": [
+      {
+        "number": 46,
+        "name": "Al-Ahqaf",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 35
+        }
+      },
+      {
+        "number": 47,
+        "name": "Muhammad",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 38
+        }
+      },
+      {
+        "number": 48,
+        "name": "Al-Fath",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 29
+        }
+      },
+      {
+        "number": 49,
+        "name": "Al-Hujurat",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 18
+        }
+      },
+      {
+        "number": 50,
+        "name": "Qaf",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 45
+        }
+      },
+      {
+        "number": 51,
+        "name": "Adh-Dhariyat",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 30
+        }
+      }
+    ]
   },
   {
-    "partNumber": 27,
-    "startChapter": 46,
-    "startVerse": 1,
-    "endChapter": 51,
-    "endVerse": 30,
-    "verseCount": 56
+    "juzNumber": 27,
+    "surahs": [
+      {
+        "number": 51,
+        "name": "Adh-Dhariyat",
+        "verseRange": {
+          "startVerse": 31,
+          "endVerse": 60
+        }
+      },
+      {
+        "number": 52,
+        "name": "At-Tur",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 49
+        }
+      },
+      {
+        "number": 53,
+        "name": "An-Najm",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 62
+        }
+      },
+      {
+        "number": 54,
+        "name": "Al-Qamar",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 55
+        }
+      },
+      {
+        "number": 55,
+        "name": "Ar-Rahman",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 78
+        }
+      },
+
+      {
+        "number": 56,
+        "name": "Al-Waqi'a",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 96
+        }
+      },
+      {
+        "number": 57,
+        "name": "Al-Hadid",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 29
+        }
+      }
+    ]
   },
   {
-    "partNumber": 28,
-    "startChapter": 51,
-    "startVerse": 31,
-    "endChapter": 57,
-    "endVerse": 29,
-    "verseCount": 45
+    "juzNumber": 28,
+    "surahs": [
+      {
+        "number": 58,
+        "name": "Al-Mujadila",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 22
+        }
+      },
+      {
+        "number": 59,
+        "name": "Al-Hashr",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 24
+        }
+      },
+      {
+        "number": 60,
+        "name": "Al-Mumtahina",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 13
+        }
+      },
+      {
+        "number": 61,
+        "name": "As-Saff",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 14
+        }
+      },
+      {
+        "number": 62,
+        "name": "Al-Jumu'a",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 11
+        }
+      },
+      {
+        "number": 63,
+        "name": "Al-Munafiqun",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 11
+        }
+      },
+      {
+        "number": 64,
+        "name": "At-Taghabun",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 18
+        }
+      },
+      {
+        "number": 65,
+        "name": "At-Talaq",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 12
+        }
+      },
+      {
+        "number": 66,
+        "name": "At-Tahrim",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 12
+        }
+      }     
+    ]
   },
   {
-    "partNumber": 29,
-    "startChapter": 58,
-    "startVerse": 1,
-    "endChapter": 66,
-    "endVerse": 12,
-    "verseCount": 46
+    "juzNumber": 29,
+    "surahs": [
+      {
+        "number": 67,
+        "name": "Al-Mulk",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 30
+        }
+      },
+      {
+        "number": 68,
+        "name": "Al-Qalam",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 52
+        }
+      },
+      {
+        "number": 69,
+        "name": "Al-Haaqqa",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 52
+        }
+      },
+      {
+        "number": 70,
+        "name": "Al-Ma'arij",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 44
+        }
+      },
+      {
+        "number": 71,
+        "name": "Nuh",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 28
+        }
+      },
+      {
+        "number": 72,
+        "name": "Al-Jinn",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 28
+        }
+      },
+      {
+        "number": 73,
+        "name": "Al-Muzzammil",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 20
+        }
+      },
+      {
+        "number": 74,
+        "name": "Al-Muddaththir",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 56
+        }
+      },
+      {
+        "number": 75,
+        "name": "Al-Qiyama",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 40
+        }
+      },
+      {
+        "number": 76,
+        "name": "Al-Insan",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 31
+        }
+      },
+      {
+        "number": 77,
+        "name": "Al-Mursalat",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 50
+        }
+      }
+    ]
   },
   {
-    "partNumber": 30,
-    "startChapter": 67,
-    "startVerse": 1,
-    "endChapter": 114,
-    "endVerse": 6,
-    "verseCount": 60
+    "juzNumber": 30,
+    "surahs": [
+      {
+        "number": 78,
+        "name": "An-Naba",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 40
+        }
+      },
+      {
+        "number": 79,
+        "name": "An-Nazi'at",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 46
+        }
+      },
+      {
+        "number": 80,
+        "name": "Abasa",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 42
+        }
+      },
+      {
+        "number": 81,
+        "name": "At-Takwir",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 29
+        }
+      },
+      {
+        "number": 82,
+        "name": "Al-Infitar",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 19
+        }
+      },
+      {
+        "number": 83,
+        "name": "Al-Mutaffifin",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 36
+        }
+      },
+      {
+        "number": 84,
+        "name": "Al-Inshiqaq",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 25
+        }
+      },
+      {
+        "number": 85,
+        "name": "Al-Buruj",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 22
+        }
+      },
+      {
+        "number": 86,
+        "name": "At-Tariq",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 17
+        }
+      },
+      {
+        "number": 87,
+        "name": "Al-Ala",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 19
+        }
+      },
+      {
+        "number": 88,
+        "name": "Al-Ghashiya",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 26
+        }
+      },
+      {
+        "number": 89,
+        "name": "Al-Fajr",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 30
+        }
+      },
+      {
+        "number": 90,
+        "name": "Al-Balad",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 20
+        }
+      },
+      {
+        "number": 91,
+        "name": "Ash-Shams",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 15
+        }
+      },
+      {
+        "number": 92,
+        "name": "Al-Layl",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 21
+        }
+      },
+      {
+        "number": 93,
+        "name": "Adh-Dhuha",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 11
+        }
+      },
+      {
+        "number": 94,
+        "name": "Ash-Sharh",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 8
+        }
+      },
+      {
+        "number": 95,
+        "name": "At-Tin",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 8
+        }
+      },
+      {
+        "number": 96,
+        "name": "Al-Alaq",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 19
+        }
+      },
+      {
+        "number": 97,
+        "name": "Al-Qadr",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 5
+        }
+      },
+      {
+        "number": 98,
+        "name": "Al-Bayyina",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 8
+        }
+      },
+      {
+        "number": 99,
+        "name": "Az-Zalzalah",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 8
+        }
+      },
+      {
+        "number": 100,
+        "name": "Al-Adiyat",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 11
+        }
+      },
+      {
+        "number": 101,
+        "name": "Al-Qaria",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 11
+        }
+      },
+      {
+        "number": 102,
+        "name": "At-Takathur",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 8
+        }
+      },
+      {
+        "number": 103,
+        "name": "Al-Asr",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 3
+        }
+      },
+      {
+        "number": 104,
+        "name": "Al-Humazah",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 9
+        }
+      },
+      {
+        "number": 105,
+        "name": "Al-Fil",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 5
+        }
+      },
+      {
+        "number": 106,
+        "name": "Quraish",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 4
+        }
+      },
+      {
+        "number": 107,
+        "name": "Al-Ma'un",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 7
+        }
+      },
+      {
+        "number": 108,
+        "name": "Al-Kawthar",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 3
+        }
+      },
+      {
+        "number": 109,
+        "name": "Al-Kafirun",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 6
+        }
+      },
+      {
+        "number": 110,
+        "name": "An-Nasr",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 3
+        }
+      },
+      {
+        "number": 111,
+        "name": "Al-Masad",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 5
+        }
+      },
+      {
+        "number": 112,
+        "name": "Al-Ikhlaas",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 4
+        }
+      },
+      {
+        "number": 113,
+        "name": "Al-Falaq",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 5
+        }
+      },
+      {
+        "number": 114,
+        "name": "An-Nas",
+        "verseRange": {
+          "startVerse": 1,
+          "endVerse": 6
+        }
+      }
+    ]
   }
 ];
 
+
+
 export const chapterNameToChapter = new Map(chapters.map(chapter => [chapter.name, chapter]));
-export const partNumberToPart = new Map(parts.map(part => [part.partNumber, part]));
+export const partNumberToPart = new Map(parts.map(part => [part.juzNumber, part]));

@@ -2,7 +2,7 @@ import { auth, db } from "@/firebase/clientApp";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Chapter, ChapterLog, ProgressLog, chapterNameToChapter, chapters, get_today, prettyPrintDate } from '../../common/utils';
+import { Chapter, ChapterLog, ProgressLog, chapterNameToChapter, chapters, get_today, prettyPrintDate, partNumberToPart } from '../../common/utils';
 import Header from "@/components/Header";
 import { DocumentData, addDoc, collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { useRouter } from "next/router";

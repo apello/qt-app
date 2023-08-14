@@ -72,11 +72,13 @@ const Reauthenticate: NextPage = (): JSX.Element => {
                         </LinkElement>
                     </Grid>
                     <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row", gap: 1 }}>
-                        {/* <LinkHolder>
-                            <LinkElement href={path!.toString()}>
-                                <Typography>Go Back</Typography>
-                            </LinkElement>
-                        </LinkHolder> */}
+                        {(path) ? (
+                            <LinkHolder>
+                                <LinkElement href={path!.toString()}>
+                                    <Typography>Go Back</Typography>
+                                </LinkElement>
+                            </LinkHolder>
+                        ) : ( <></> )}
                         <ModeToggle />
                     </Grid>
                 </Grid>

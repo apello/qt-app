@@ -68,22 +68,44 @@ const ViewProgress: NextPage = (): JSX.Element => {
                             </Breadcrumbs>
                             <Typography level='h1' sx={{ mb: 1 }}>Recent Progress</Typography>
                             <Typography level='title-sm'>
-                            View the last 15 logs you memorized/revised.                            
+                            View the last 15 logs you memorized/revised. Track any new progress <NextLink href='/progress/track-progress'>here.</NextLink>                       
                             </Typography>
                         </Box>
                         
-                        <ButtonGroup sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
-                            <Button variant='soft' sx={{ cursor: 'default' }}>
-                                <Typography>Recent Progress</Typography>
-                            </Button>
-                            <Button>
-                                <NextLink href='/progress/view-all-progress'>
-                                    <Link overlay>
-                                        <Typography>All Progress</Typography>
-                                    </Link>
-                                </NextLink>
-                            </Button>
-                        </ButtonGroup>
+                        {/* Temporary Fix */}
+                        <Box sx={{ display: {xs: 'inherit', sm: 'none'}}}>
+                            <ButtonGroup 
+                                sx={{ display: 'flex', justifyContent: 'center', my: 3 }}
+                                orientation="vertical">
+                                <Button variant='soft' sx={{ cursor: 'default' }}>
+                                    <Typography>Recent Progress</Typography>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/progress/view-all-progress'>
+                                        <Link overlay>
+                                            <Typography>All Progress</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                            </ButtonGroup>
+                        </Box>
+                        <Box sx={{ display: {xs: 'none', sm: 'inherit'}}}>
+                            <ButtonGroup 
+                                sx={{ display: 'flex', justifyContent: 'center', my: 3 }}
+                                orientation="horizontal">
+                                <Button variant='soft' sx={{ cursor: 'default' }}>
+                                    <Typography>Recent Progress</Typography>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/progress/view-all-progress'>
+                                        <Link overlay>
+                                            <Typography>All Progress</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                            </ButtonGroup>
+                        </Box>
+                        
 
                         <RecentProgressTable
                             memorizationLogs={memorizationLogs}
@@ -102,9 +124,9 @@ const RecentProgressTable: React.FC<{ memorizationLogs: any, revisionLogs: any }
     return (
         <Box>
             {(memorizationLogs !== undefined) ? (
-                <Sheet sx={{ p: 3, borderRadius: '10px', my: 2 }} variant='outlined'> 
+                <Sheet sx={{ p: 3, my: 2 }} variant='outlined'> 
                     <Typography level="h4">Memorization</Typography>
-                    <Table sx={{ my: 2 }} borderAxis='bothBetween'>
+                    <Table sx={{ my: 2, border: 0 }} borderAxis='both'>
                         {(memorizationLogs!.length > 0) ? (
                             <>
                                 <thead>
@@ -136,9 +158,9 @@ const RecentProgressTable: React.FC<{ memorizationLogs: any, revisionLogs: any }
             ) : ( <Typography sx={{ p: 2 }}>Loading...</Typography> )}  
 
             {(revisionLogs !== undefined) ? (
-                <Sheet sx={{ p: 3, borderRadius: '10px', my: 2 }} variant='outlined'> 
+                <Sheet sx={{ p: 3, my: 2 }} variant='outlined'> 
                     <Typography level="h4">Revision</Typography>
-                    <Table sx={{ my: 2 }} borderAxis='bothBetween'>
+                    <Table sx={{ my: 2 }} borderAxis='both'>
                         {(revisionLogs!.length > 0) ? (
                             <>
                                 <thead>

@@ -6,11 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mui/base": "^5.0.0-beta.11",
     "@mui/icons-material": "^5.14.3",
     "@mui/joy": "^5.0.0-beta.0",
     "@mui/material": "^5.14.3",
@@ -26,5 +28,8 @@
     "react-dropzone": "^14.2.3",
     "react-firebase-hooks": "^5.1.1",
     "typescript": "5.1.6"
+  },
+  "devDependencies": {
+    "jest": "^29.6.2"
   }
 }

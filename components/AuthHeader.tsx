@@ -30,8 +30,9 @@ const AuthHeader = (): JSX.Element => {
                 <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                     <Grid xs={6}>
                         <LinkElement href='/'>
-                            <Typography level="h3">Quran Tracker
-                            </Typography>
+                            {/* For smaller screens */}
+                            <Typography level="h3" sx={{ display: {xs: 'none', sm: 'flex' } }}>Quran Tracker</Typography>
+                            <Typography level="h3" sx={{ display: {xs: 'flex', sm: 'none' } }}>QT</Typography>
                         </LinkElement>
                     </Grid>
                     <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row", gap: 1 }}>

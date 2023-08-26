@@ -20,13 +20,14 @@ const Header = (): JSX.Element => {
             })
     };
 
-    const LinkElement = styled(NextLink)({
+    const LinkElement = styled(NextLink)(({ theme }) => ({
         cursor: 'pointer',
         textDecoration: 'none',
         '&:hover': {
             textDecoration: 'underline',
         },
-    });
+        color: theme.vars.palette.text.primary
+    }));
 
     const Header = styled(Box)(({ theme }) => ({
         backgroundColor: theme.palette.background.body,
@@ -38,7 +39,9 @@ const Header = (): JSX.Element => {
             <Grid container spacing={3} sx={{ flexGrow: 1 }}>
                 <Grid xs={6}>
                     <LinkElement href='/landing'>
-                        <Typography level="h3">Quran Tracker</Typography>
+                        {/* For smaller screens */}
+                        <Typography level="h3" sx={{ display: {xs: 'none', sm: 'flex' } }}>Quran Tracker</Typography>
+                        <Typography level="h3" sx={{ display: {xs: 'flex', sm: 'none' } }}>QT</Typography>
                     </LinkElement>
                 </Grid>
                 <Grid xs={6} sx={{ display: "flex", justifyContent: "right", flexDirection: "row", gap: {xs: 0, md: 1} }}>
@@ -80,7 +83,6 @@ const Header = (): JSX.Element => {
                         ) : ( 
                             <Avatar sx={{ ml: 1, border: 1, borderColor: 'neutral.outlinedBorder' }}/>
                         )}
-                        
                     </NextLink>
                 </Grid>
             </Grid>

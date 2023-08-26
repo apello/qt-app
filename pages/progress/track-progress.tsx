@@ -122,7 +122,9 @@ const TrackProgress: NextPage = (): JSX.Element => {
                         number: currentChapter.number,
                         name: currentChapter.name,
                         lastReviewed: get_today(),
-                        lastVerseCompleted: (completed) ? currentChapter.verseCount : verseRange.endVerse
+                        lastVerseCompleted: (readingType === 'Memorization') ? (
+                            (completed) ? currentChapter.verseCount : verseRange.endVerse
+                        ) : 0
                     })
                 ),
                 addDoc(collection(db, `data/${user!.uid}/log`), {
@@ -211,7 +213,9 @@ const TrackProgress: NextPage = (): JSX.Element => {
                             </Breadcrumbs>
                             <Typography level='h1'>Track Progress</Typography>
                             <Typography level='title-sm'>
-                            Track the individual progress you make, or input progress on the challenges you have created. Tracking currently only looks at chapter-based revision and memorization. 
+                            Track the individual progress you make, or input progress on the challenges you have created. 
+                            Tracking currently only looks at chapter-based revision and memorization. 
+                            View recent progress <Link href='/progress/view-recent-progress/'>here</Link> or check out your overall progress <Link href='/progress/view-all-progress/'>here</Link>.
                             </Typography>
                         </Box>
 

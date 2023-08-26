@@ -94,42 +94,80 @@ const ChangePassword: NextPage = (): JSX.Element => {
                             <Typography level='h1' sx={{ mb: 1 }}>Password</Typography>
                         </Box>
                         
-                        <ButtonGroup sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
-                            <Button>
-                                <NextLink href='/settings/'>
-                                    <Link overlay>
-                                        <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Profile</Typography>
-                                    </Link>
-                                </NextLink>
-                            </Button>
-                            <Button>
-                                <NextLink href='/settings/account'>
-                                    <Link overlay>
-                                        <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Account</Typography>
-                                    </Link>
-                                </NextLink>
-                            </Button>
-                            <Button variant='soft' sx={{ cursor: 'default' }}>
-                                <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Password</Typography>
-                            </Button>
-                            <Button>
-                                <NextLink href='/settings/goals'>
-                                    <Link overlay>
-                                        <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Goals</Typography>
-                                    </Link>
-                                </NextLink>
-                            </Button>
-                        </ButtonGroup>
-                       
+                        {/* Temporary Fix */}
+                        <Box sx={{ display: {xs: 'inherit', sm: 'none'}}}>
+                            <ButtonGroup 
+                                sx={{ display: 'flex', justifyContent: 'center', my: 3 }} 
+                                orientation='vertical'> 
+                                <Button>
+                                    <NextLink href='/settings/'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Profile</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/account'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Account</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button variant='soft' sx={{ cursor: 'default' }}>
+                                    <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Password</Typography>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/goals'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Goals</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                            </ButtonGroup>
+                        </Box>
+                        
+                        <Box sx={{ display: {xs: 'none', sm: 'inherit'}}}>
+                            <ButtonGroup 
+                                sx={{ display: 'flex', justifyContent: 'center', my: 3 }} 
+                                orientation='horizontal'> 
+                                <Button>
+                                    <NextLink href='/settings/'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Profile</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/account'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Account</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button variant='soft' sx={{ cursor: 'default' }}>
+                                    <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Password</Typography>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/goals'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Goals</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                            </ButtonGroup>
+                        </Box>
+
+                        {/* Temporary Fix */}
+                        
                         <Card sx={{ 
-                                px: 6,
+                                px: {xs: 3, sm: 6},
                                 borderRadius: '10px', 
                                 my: 2,
                                 py: 4
                             }} 
                             variant='outlined'> 
 
-                            <Typography level="h3" sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Typography level="h4" sx={{ display: 'flex', alignItems: 'center' }}>
                                     <Tooltip title='The password entered must be equal to or greater than 8 characters, and passwords must match.'>
                                         <InfoOutlinedIcon sx={{ color: 'text.secondary', height: '20px' }} />
                                     </Tooltip>
@@ -166,7 +204,7 @@ const ChangePassword: NextPage = (): JSX.Element => {
                                         disabled={passwords.initialPassword === '' || passwords.reEnterPassword === ''}
                                         variant='outlined'
                                         color='neutral'
-                                        sx={{ display: 'inherit', alignSelf: 'flex-end', width: '200px'}}>
+                                        sx={{ display: 'inherit', alignSelf: 'flex-end', width: {xs: '100%', sm:'200px'}}}>
                                         Save Changes
                                     </Button>  
                                 ) : (
@@ -176,7 +214,7 @@ const ChangePassword: NextPage = (): JSX.Element => {
                                         endDecorator={<SendIcon />}
                                         variant="solid"
                                         color='neutral'
-                                        sx={{ display: 'inherit', alignSelf: 'flex-end', width: '200px'}}>
+                                        sx={{ display: 'inherit', alignSelf: 'flex-end', width: {xs: '100%', sm:'200px'}}}>
                                         Save Changes
                                     </Button>  
                                 )}

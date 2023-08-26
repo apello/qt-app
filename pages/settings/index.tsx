@@ -76,32 +76,67 @@ const ViewProgress: NextPage = (): JSX.Element => {
                             <Typography level='h1' sx={{ mb: 1 }}>Profile</Typography>
                         </Box>
                         
-                        <ButtonGroup sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
-                            <Button variant='soft' sx={{ cursor: 'default' }}>
-                                <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Profile</Typography>
-                            </Button>
-                            <Button>
-                                <NextLink href='/settings/account'>
-                                    <Link overlay>
-                                        <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Account</Typography>
-                                    </Link>
-                                </NextLink>
-                            </Button>
-                            <Button>
-                                <NextLink href='/settings/password'>
-                                    <Link overlay>
-                                        <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Password</Typography>
-                                    </Link>
-                                </NextLink>
-                            </Button>
-                            <Button>
-                                <NextLink href='/settings/goals'>
-                                    <Link overlay>
-                                        <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Goals</Typography>
-                                    </Link>
-                                </NextLink>
-                            </Button>
-                        </ButtonGroup>
+                        {/* Temporary Fix */}
+                        <Box sx={{ display: {xs: 'inherit', sm: 'none'}}}>
+                            <ButtonGroup 
+                                sx={{ display: 'flex', justifyContent: 'center', my: 3 }} 
+                                orientation='vertical'>
+                                <Button variant='soft' sx={{ cursor: 'default' }}>
+                                    <Typography sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Profile</Typography>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/account'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Account</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/password'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Password</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/goals'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Goals</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                            </ButtonGroup>
+                        </Box>
+                        <Box sx={{ display: {xs: 'none', sm: 'inherit'}}}>
+                            <ButtonGroup 
+                                sx={{ display: 'flex', justifyContent: 'center', my: 3 }} 
+                                orientation='horizontal'>
+                                <Button variant='soft' sx={{ cursor: 'default' }}>
+                                    <Typography sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Profile</Typography>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/account'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Account</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/password'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Password</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/goals'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Goals</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                            </ButtonGroup>
+                        </Box>
                        
                         <Card sx={{ 
                             display: 'flex', 
@@ -124,7 +159,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                             badgeContent={<EditIcon />}>
                                             <Avatar 
                                                 src={user.photoURL} 
-                                                sx={{ '--Avatar-size': '288px' }}/>
+                                                sx={{ '--Avatar-size': {xs: '240px', md: '300px'} }}/>
                                         </Badge>
                                     </Box>
                                 ) : ( 
@@ -135,14 +170,12 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                             badgeContent={<EditIcon />}
                                             >
                                             <Avatar sx={{ 
-                                                width: 'clamp(18rem, 1.3636rem + 2.1818vw, 30rem)',
-                                                height: 'clamp(18rem, 1.3636rem + 2.1818vw, 30rem)',
+                                                width: 'clamp(15rem, 1.3636rem + 2.1818vw, 30rem)',
+                                                height: 'clamp(15rem, 1.3636rem + 2.1818vw, 30rem)',
                                                 border: 1,
                                             }}/>
 
                                         </Badge>
-                                        {/* <input type='file' onChange={(e) => setFile((e.target.files) ? e.target.files[0] : null )} />
-                                        <input type='submit' onClick={handlePhotoUrl} /> */}
                                      </Box>
                                 )}
 
@@ -186,8 +219,8 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                 </Modal>
                             </Box>
                             <Box>
-                                <Typography level='h1' sx={{ mb: 1 }}>{user.displayName}</Typography>
-                                <Typography level='title-md'>
+                                <Typography level='h1' sx={{ mb: 1, fontSize: {xs: '2rem', sm: '2.5rem'} }}>{user.displayName}</Typography>
+                                <Typography level='title-md' sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>
                                     Email: {user.email} - {(user.emailVerified) ? (
                                         <Typography>Verified</Typography> 
                                     ) : (
@@ -201,8 +234,8 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                         </a>
                                     )}
                                 </Typography>
-                                <Typography level='title-md'>Joined: {prettyPrintNormalDate(user.metadata.creationTime)}</Typography>
-                                <Typography level='title-md'>Last Sign In: {prettyPrintNormalDate(user.metadata.lastSignInTime)}</Typography>
+                                <Typography level='title-md' sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Joined: {prettyPrintNormalDate(user.metadata.creationTime)}</Typography>
+                                <Typography level='title-md' sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Last Sign In: {prettyPrintNormalDate(user.metadata.lastSignInTime)}</Typography>
                                 <Button variant="outlined" color="neutral" sx={{ my: 2 }}>
                                     <NextLink href="/settings/account">
                                         <LinkElement overlay>

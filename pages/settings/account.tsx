@@ -114,39 +114,76 @@ const EditAccount: NextPage = (): JSX.Element => {
                             <Typography level='h1' sx={{ mb: 1 }}>Account</Typography>
                         </Box>
                         
-                        <ButtonGroup sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
-                            <Button>
-                                <NextLink href='/settings/'>
-                                    <Link overlay>
-                                        <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Profile</Typography>
-                                    </Link>
-                                </NextLink>
-                            </Button>
-                            <Button variant='soft' sx={{ cursor: 'default' }}>
-                                <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Account</Typography>
-                            </Button>
-                            <Button>
-                                <NextLink href='/settings/password'>
-                                    <Link overlay>
-                                        <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Password</Typography>
-                                    </Link>
-                                </NextLink>
-                            </Button>
-                            <Button>
-                                <NextLink href='/settings/goals'>
-                                    <Link overlay>
-                                        <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Goals</Typography>
-                                    </Link>
-                                </NextLink>
-                            </Button>
-                        </ButtonGroup>
+                        <Box sx={{ display: {xs: 'none', sm: 'inherit'}}}>
+                            <ButtonGroup 
+                                sx={{ display: 'flex', justifyContent: 'center', my: 3 }} 
+                                orientation='horizontal'>                           
+                                    
+                                <Button>
+                                    <NextLink href='/settings/'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Profile</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button variant='soft' sx={{ cursor: 'default' }}>
+                                    <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Account</Typography>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/password'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Password</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/goals'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Goals</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                            </ButtonGroup>
+                        </Box>
+
+                        <Box sx={{ display: {xs: 'inherit', sm: 'none'}}}>
+                            <ButtonGroup 
+                                sx={{ display: 'flex', justifyContent: 'center', my: 3 }} 
+                                orientation='vertical'>                           
+                                    
+                                <Button>
+                                    <NextLink href='/settings/'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Profile</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button variant='soft' sx={{ cursor: 'default' }}>
+                                    <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Account</Typography>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/password'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Password</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                                <Button>
+                                    <NextLink href='/settings/goals'>
+                                        <Link overlay>
+                                            <Typography sx={{ fontSize: {xs: '.9rem', md: '1rem'}}}>Goals</Typography>
+                                        </Link>
+                                    </NextLink>
+                                </Button>
+                            </ButtonGroup>
+                        </Box>
                        
                         <Card sx={{ 
                             display: 'flex', 
                             flexDirection: 'column',
                             justifyContent: 'center',
                             gap: 2,
-                            px: 6,
+                            px: {xs: 3, sm: 6},
                             borderRadius: '10px', 
                             my: 2,
                             py: 4,
@@ -175,7 +212,7 @@ const EditAccount: NextPage = (): JSX.Element => {
                                     disabled={displayName === ''}
                                     variant='outlined'
                                     color='neutral'
-                                    sx={{ display: 'inherit', alignSelf: 'flex-end', width: '200px'}}>
+                                    sx={{ display: 'inherit', alignSelf: 'flex-end', width: {xs: '100%', sm:'200px'}}}>
                                     Save Changes
                                 </Button>  
                             ) : (
@@ -185,7 +222,7 @@ const EditAccount: NextPage = (): JSX.Element => {
                                     endDecorator={<SendIcon />}
                                     variant="solid"
                                     color='neutral'
-                                    sx={{ display: 'inherit', alignSelf: 'flex-end', width: '200px'}}>
+                                    sx={{ display: 'inherit', alignSelf: 'flex-end', width: {xs: '100%', sm:'200px'}}}>
                                     Save Changes
                                 </Button>  
                             )}
@@ -196,7 +233,7 @@ const EditAccount: NextPage = (): JSX.Element => {
                             flexDirection: 'column',
                             justifyContent: 'center',
                             gap: 2,
-                            px: 6,
+                            px: {xs: 3, sm: 6},
                             borderRadius: '10px', 
                             my: 2,
                             py: 4,
@@ -222,7 +259,7 @@ const EditAccount: NextPage = (): JSX.Element => {
                                     disabled={email === ''}
                                     variant='outlined'
                                     color='neutral'
-                                    sx={{ display: 'inherit', alignSelf: 'flex-end', width: '200px'}}>
+                                    sx={{ display: 'inherit', alignSelf: 'flex-end', width: {xs: '100%', sm:'200px'}}}>
                                     Save Changes
                                 </Button>  
                             ) : (
@@ -232,7 +269,7 @@ const EditAccount: NextPage = (): JSX.Element => {
                                     endDecorator={<SendIcon />}
                                     variant="solid"
                                     color='neutral'
-                                    sx={{ display: 'inherit', alignSelf: 'flex-end', width: '200px'}}>
+                                    sx={{ display: 'inherit', alignSelf: 'flex-end', width: {xs: '100%', sm:'200px'}}}>
                                     Save Changes
                                 </Button>  
                             )}

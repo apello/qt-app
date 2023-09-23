@@ -70,22 +70,34 @@ const Dropzone: React.FC<{ user: User }> = ({ user }): JSX.Element => {
                                     setLoading(false);
                                 })
                                 .catch((error) => {
+                                    if(error.code === 'storage/unauthorized') {
+                                        setAlert("Error updating profile picture. Please verify your email in settings to continue.");
+                                    } else {
+                                        setAlert(`Error updating profile picture: ${error}`);
+                                    }
                                     setLoading(false);
-                                    setAlert(`Error updating profile picture: ${error}`);
                                     setOpenAlert(true);
                                     console.log(`Could not set photo URL: ${error}`)
                                 })
                         })  
                         .catch((error) => {
                             setLoading(false);
-                            setAlert(`Error updating profile picture: ${error}`);
+                            if(error.code === 'storage/unauthorized') {
+                                setAlert("Error updating profile picture. Please verify your email in settings to continue.");
+                            } else {
+                                setAlert(`Error updating profile picture: ${error}`);
+                            }
                             setOpenAlert(true);
                             console.log(`Download failed: ${error}`);
                         })
                 })
                 .catch((error) => {
                     setLoading(false);
-                    setAlert(`Error updating profile picture: ${error}`);
+                    if(error.code === 'storage/unauthorized') {
+                        setAlert("Error updating profile picture. Please verify your email in settings to continue.");
+                    } else {
+                        setAlert(`Error updating profile picture: ${error}`);
+                    }
                     setOpenAlert(true);
                     console.log(`Upload failed: ${error}`)
                 })
@@ -157,6 +169,7 @@ const Dropzone: React.FC<{ user: User }> = ({ user }): JSX.Element => {
                         </div>
                     )}
 
+                    {/* Not needed as files are not able to be selected */}
                     {rejected.map(({file, errors}, index) => 
                         <div key={file.name+index}>
                             <Typography level='title-sm' fontWeight='bold' sx={{ display: 'inline-block', my: 1, mr: 2 }}>{file.name}</Typography>

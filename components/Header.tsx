@@ -68,6 +68,12 @@ const Header = (): JSX.Element => {
                             </MenuItem>
                             <ListDivider />
                             <MenuItem>
+                                <LinkElement href='mailto:abdelrahmanmuhiyadiin@gmail.com'>
+                                    <Link overlay>Contact</Link>
+                                </LinkElement>
+                            </MenuItem>
+                            <ListDivider />
+                            <MenuItem>
                                 <LinkElement href='' onClick={handleSignOut}>
                                     <Link overlay>Sign out</Link>
                                 </LinkElement>

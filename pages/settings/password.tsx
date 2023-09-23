@@ -21,6 +21,11 @@ const ChangePassword: NextPage = (): JSX.Element => {
     const [loadingUpdate, setLoadingUpdate] = useState(false);
     const router = useRouter();
 
+    let isAuthenticatedByGoogle = false;
+    if(user && user.providerData[0].providerId === 'google.com'){
+        isAuthenticatedByGoogle = true;
+    }
+
     const { query : { reauthenticate } } = useRouter();
 
     useEffect(() => {
@@ -35,10 +40,10 @@ const ChangePassword: NextPage = (): JSX.Element => {
         if(user) {
             if(passwords.initialPassword !== passwords.reEnterPassword) {
                 setOpenAlert(true);
-                setAlert('Error updating user account information: given passwords do not match. Please try again.');
+                setAlert('Error updating user account information: Given passwords do not match. Please try again.');
             } else if(passwords.initialPassword.length < 8) {
                 setOpenAlert(true);
-                setAlert('Error updating user account information: given password must be 8 characters or more. Please try again.');
+                setAlert('Error updating user account information: Given password must be 8 characters or more. Please try again.');
             } else {
                 setLoadingUpdate(true);
                 updatePassword(user, passwords.initialPassword)
@@ -186,6 +191,8 @@ const ChangePassword: NextPage = (): JSX.Element => {
                                     <Input 
                                         type='password'
                                         value={passwords.initialPassword}
+                                        disabled={isAuthenticatedByGoogle}
+                                        placeholder={(isAuthenticatedByGoogle) ? "Cannot change by password when authenticated by Google. Updates coming soon." : "Enter password here:"}
                                         onChange={(e) => setPasswords({...passwords, initialPassword: e.target.value})}
                                         required />
                                 </FormControl>       
@@ -194,7 +201,8 @@ const ChangePassword: NextPage = (): JSX.Element => {
                                     <Input 
                                         type='password'
                                         value={passwords.reEnterPassword}
-                                        onChange={(e) => setPasswords({...passwords, reEnterPassword: e.target.value})}
+                                        disabled={isAuthenticatedByGoogle}
+                                        placeholder={(isAuthenticatedByGoogle) ? "Cannot change by password when authenticated by Google. Updates coming soon." : "Re-enter password here:"}                                        onChange={(e) => setPasswords({...passwords, reEnterPassword: e.target.value})}
                                         required />
                                 </FormControl> 
 

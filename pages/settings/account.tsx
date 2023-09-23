@@ -25,6 +25,11 @@ const EditAccount: NextPage = (): JSX.Element => {
 
     const { query : { reauthenticate } } = useRouter();
 
+    let isAuthenticatedByGoogle = false;
+    if(user && user.providerData[0].providerId === 'google.com'){
+        isAuthenticatedByGoogle = true;
+    }
+
     useEffect(() => {
         if(reauthenticate === 'true') {
             setOpenAlert(true);
@@ -72,6 +77,8 @@ const EditAccount: NextPage = (): JSX.Element => {
                 } else if (error.code === 'auth/invalid-email') {
                     setOpenAlert(true);
                     setAlert('Error updating user account information: Email provided is invalid. Please try again.');
+                } else if (error.code === 'auth/email-already-in-use') {
+                    setAlert('Error updating user account information: Email provided is in use. Please use another email.');
                 } else {
                     setOpenAlert(true);
                     setAlert(`Error updating user account information: ${error}`);
@@ -203,6 +210,7 @@ const EditAccount: NextPage = (): JSX.Element => {
                                 <Input 
                                     type='text'
                                     value={displayName}
+                                    placeholder="Enter full name here:"
                                     onChange={(e) => setDisplayName(e.target.value)} />
                             </FormControl>       
                             
@@ -250,6 +258,8 @@ const EditAccount: NextPage = (): JSX.Element => {
                                 <Input 
                                     type='email'
                                     value={email}
+                                    disabled={isAuthenticatedByGoogle}
+                                    placeholder={(isAuthenticatedByGoogle) ? "Cannot change email when autheticated with Google. Changes coming soon." : "Enter new email here: "}
                                     onChange={(e) => setEmail(e.target.value)} />
                             </FormControl> 
 

@@ -14,12 +14,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import Dropzone from "@/components/Dropzone";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import DeleteAccount from "@/components/DeleteAccount";
 
 const ViewProgress: NextPage = (): JSX.Element => {
     const [user, loading, error] = useAuthState(auth);
     const [alert, setAlert] = useState('');
     const [openAlert, setOpenAlert] = useState(false);
-    const [openModal, setOpenModal] = useState(false);
+    const [openPFPModal, setOpenPFPModal] = useState(false);
+    const [openDeleteAccountModal, setOpenDeleteAccountModal] = useState(false);
 
     const verifyEmail = () => {
         if(user) {
@@ -152,7 +154,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
                         variant='outlined'> 
                             <Box>
                                 {(user.photoURL) ? (
-                                    <Box onClick={() => setOpenModal(true)} sx={{ cursor: 'pointer' }}>
+                                    <Box onClick={() => setOpenPFPModal(true)} sx={{ cursor: 'pointer' }}>
                                         <Badge
                                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                                             badgeInset="14%"
@@ -163,7 +165,7 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                         </Badge>
                                     </Box>
                                 ) : ( 
-                                    <Box onClick={() => setOpenModal(true)} sx={{ cursor: 'pointer' }}>
+                                    <Box onClick={() => setOpenPFPModal(true)} sx={{ cursor: 'pointer' }}>
                                         <Badge
                                             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                                             badgeInset="14%"
@@ -181,8 +183,8 @@ const ViewProgress: NextPage = (): JSX.Element => {
 
                                 <Modal
                                     aria-labelledby="close-modal-title"
-                                    open={openModal}
-                                    onClose={() => { setOpenModal(false); }}
+                                    open={openPFPModal}
+                                    onClose={() => { setOpenPFPModal(false); }}
                                     sx={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -236,16 +238,59 @@ const ViewProgress: NextPage = (): JSX.Element => {
                                 </Typography>
                                 <Typography level='title-md' sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Joined: {prettyPrintNormalDate(user.metadata.creationTime)}</Typography>
                                 <Typography level='title-md' sx={{ fontSize: {xs: '.9rem', sm: '1rem'}}}>Last Sign In: {prettyPrintNormalDate(user.metadata.lastSignInTime)}</Typography>
-                                <Button variant="outlined" color="neutral" sx={{ my: 2 }}>
-                                    <NextLink href="/settings/account">
-                                        <LinkElement overlay>
-                                            <Typography level='body-sm'>Edit Account</Typography>
-                                        </LinkElement>
-                                    </NextLink>
-                                </Button>
+                                
+                                <Box sx={{ display: 'flex', gap: 1, my: 3 }}>
+                                    <Button variant="outlined" color="neutral">
+                                        <NextLink href="/settings/account">
+                                            <LinkElement overlay>
+                                                <Typography level='body-sm'>Edit Account</Typography>
+                                            </LinkElement>
+                                        </NextLink>
+                                    </Button>
+
+                                    <Button 
+                                        variant="outlined" 
+                                        color="danger" 
+                                        onClick={() => setOpenDeleteAccountModal(true)}>Delete Account</Button>
+
+                                    <Modal
+                                        aria-labelledby="close-modal-title"
+                                        open={openDeleteAccountModal}
+                                        onClose={() => setOpenDeleteAccountModal(false)}
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        <Sheet
+                                        variant="outlined"
+                                        sx={{
+                                            minWidth: 400,
+                                            borderRadius: 'md',
+                                            p: 3,
+                                        }}
+                                        >
+                                            <ModalClose variant="outlined" />
+                                            <Typography
+                                                component="h2"
+                                                id="close-modal-title"
+                                                level="h4"
+                                                textColor="inherit"
+                                                fontWeight="lg"
+                                                sx={{
+                                                    display: 'flex', 
+                                                    alignItems: 'center'
+                                                }}
+                                            >
+                                                Delete Account
+                                            </Typography>
+                                            <DeleteAccount user={user} loading={loading} />
+                                        </Sheet>
+                                    </Modal>
+                                </Box>
                             </Box>
                         </Card>
-                          
                     </Container>
                 </Box>
             ) : ( 

@@ -400,22 +400,14 @@ const LogModal: React.FC<{
                                     Archived: {(currentLog.data.archived) ? 'Yes' : 'No'}
                                 </Typography>
                             </Box>
-                            <CardActions buttonFlex="0 1 120px" sx={{ gap: 2 }}>
-                                <Tooltip title="Archive functionality coming soon." variant='soft'>
-                                    <Button 
-                                        variant="outlined" 
-                                        color="neutral">
-                                        Archive
-                                    </Button>
-                                </Tooltip>
-                                <Tooltip title="Delete functionality coming soon." variant='soft'>
-                                    <Button 
-                                        variant="outlined" 
-                                        color="danger">
-                                        Delete
-                                    </Button>
-                                </Tooltip>
-                            </CardActions>
+                               
+                            <Tooltip title="Delete functionality coming soon." variant='soft'>
+                                <Button 
+                                    variant="outlined" 
+                                    color="danger">
+                                    Delete
+                                </Button>
+                            </Tooltip>
                         </>
                     ) : ( <>Loading...</> )}
             </Sheet>

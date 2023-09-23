@@ -1,13 +1,14 @@
 import { auth } from "@/firebase/clientApp";
-import { Alert, Button, Container, CssVarsProvider, FormControl, FormLabel, IconButton, Input, Link, Sheet, Typography } from "@mui/joy";
+import { Alert, Button, Container, CssVarsProvider, FormControl, FormLabel, IconButton, Input, Link, Sheet, Typography, Box, Divider } from "@mui/joy";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { FormEventHandler, useEffect, useState } from "react";
-import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { useSignInWithEmailAndPassword, useSignInWithGoogle } from "react-firebase-hooks/auth";
 import SendIcon from '@mui/icons-material/Send';
 import { credentialsValid } from "@/common/utils";
 import AuthHeader from "@/components/AuthHeader";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import GoogleIcon from '@mui/icons-material/Google';
 
 // Add more restrictions to credentials
 const Login: NextPage = (): JSX.Element => {
@@ -16,31 +17,33 @@ const Login: NextPage = (): JSX.Element => {
     const [openAlert, setOpenAlert] = useState(false);
     const [
         signInWithEmailAndPassword,
-        user,
-        loading,
-        error
+        userWithEmailAndPassword,
+        loadingWithEmailAndPassword,
+        errorWithEmailPassword
     ] = useSignInWithEmailAndPassword(auth); // react-firebase-hook
 
     const router = useRouter();
+
+    // Email and Password: //
 
     // .then() and .catch() does not work with signInWithEmailAndPassword react-firebase-hook
     // Use loading and error values instead
 
     // .then()
     useEffect(() => {
-        if(!loading && user) {
+        if(!loadingWithEmailAndPassword && userWithEmailAndPassword) {
             router.push('/landing')
         }
-    },[loading, router, user]);
+    },[loadingWithEmailAndPassword, router, userWithEmailAndPassword]);
 
     // .catch()
     useEffect(() => {
-        if(error) {
+        if(errorWithEmailPassword) {
             setOpenAlert(true);
             setAlert('Email/password do not exist! Please try again.');
-            console.log(`Login failed: ${error}`);
+            console.log(`Login failed: ${errorWithEmailPassword}`);
         }
-    },[error]);
+    },[errorWithEmailPassword]);
 
     const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
@@ -50,6 +53,36 @@ const Login: NextPage = (): JSX.Element => {
             signInWithEmailAndPassword(credentials.email, credentials.password)
         }
     }
+
+    // Google: //
+
+    const [
+        signInWithGoogle, 
+        userWithGoogle, 
+        loadingWithGoogle, 
+        errorWithGoogle
+    ] = useSignInWithGoogle(auth);
+
+     // .then()
+     useEffect(() => {
+        if(!loadingWithGoogle && userWithGoogle) {
+            router.push('/landing')
+        }
+    },[loadingWithGoogle, router, userWithGoogle]);
+
+    // .catch()
+    useEffect(() => {
+        if(errorWithGoogle) {
+            setOpenAlert(true);
+            setAlert('Google account does not exist! Please create an account or try again.');
+            console.log(`Login failed: ${errorWithGoogle}`);
+        }
+    },[errorWithGoogle]);
+
+    const handleGoogleLogin = async () => {
+        signInWithGoogle();
+    }
+
 
     return (
         <CssVarsProvider>
@@ -86,10 +119,10 @@ const Login: NextPage = (): JSX.Element => {
                     borderRadius: 'sm'
                 }}>
                     <div>
-                    <Typography level="h3" component="h1">
-                        Welcome!
-                    </Typography>
-                    <Typography level='body-md'>Log in to continue.</Typography> 
+                        <Typography level="h3" component="h1">
+                            Welcome!
+                        </Typography>
+                        <Typography level='body-md'>Log in to continue.</Typography> 
                     </div>
 
                     <form onSubmit={(e) => handleSubmit(e)}>
@@ -103,7 +136,12 @@ const Login: NextPage = (): JSX.Element => {
                                 required />
                         </FormControl>
                         <FormControl sx={{ mb: 1 }}>
-                            <FormLabel>Password:</FormLabel>
+                            <Box sx={{ display: 'flex' }}>
+                                <FormLabel>Password:</FormLabel>
+                                <Typography level='body-sm' sx={{ display: 'inherit', justifyContent: 'end', alignItems: 'start', width: '100%'}}>
+                                    <Link href='/auth/forgot-password'>Forgot password?</Link>
+                                </Typography>
+                            </Box>
                             <Input
                                 name="password"
                                 type="password"
@@ -111,23 +149,37 @@ const Login: NextPage = (): JSX.Element => {
                                 onChange={({ target }) => setCredentials({ ...credentials, password: target.value })} 
                                 required />
                         </FormControl>       
-                        {(!loading) ? (
-                            <Button type="submit" sx={{ mt: 1 }}>Log in</Button>
+                        {(!loadingWithEmailAndPassword) ? (
+                            <Button type="submit" sx={{ mt: 1, width: '100%' }}>Log in</Button>
                         ) : (
                             <Button
                             loading
                             loadingPosition="end"
                             endDecorator={<SendIcon />}
                             variant="solid"
-                            >
-                            Log in
+                            sx={{ width: '100%'}}>
+                                Log in
                             </Button>
                         )}
                     </form>
-
-                    <Typography>
-                        <Link href='/auth/forgot-password'>Forgot password?</Link>
-                    </Typography>
+                    
+                    <Divider>or</Divider>
+                    
+                     {(!loadingWithGoogle) ? (
+                        <Button 
+                            color="neutral"
+                            variant="outlined" 
+                            onClick={handleGoogleLogin}
+                            startDecorator={<GoogleIcon />}>Sign in with Google</Button>
+                    ) : (
+                        <Button 
+                            loading
+                            loadingPosition="end"
+                            endDecorator={<SendIcon />}
+                            variant="solid"
+                            startDecorator={<GoogleIcon />}>Sign in with Google</Button>
+                    )}
+                   
 
                 </Sheet>
             </Container>

@@ -56,7 +56,7 @@ const Landing: NextPage = (): JSX.Element => {
                                     <CardContent>
                                         <Typography level="h4">Track Progress</Typography>
                                         <Typography level="body-sm">
-                                        Memorized a new verse? Revised a previous page? Track it here!
+                                            Memorized a new verse? Revised a previous page? Track it here!
                                         </Typography>
                                     </CardContent>
                                     <CardActions buttonFlex="0 1 200px">

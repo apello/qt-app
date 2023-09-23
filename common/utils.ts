@@ -42,9 +42,8 @@ export const credentialsValid = (credentials: any): boolean => {
 
 export const registrationCredentialsValid = (credentials: any): boolean => {
   return (
-    credentials.displayName.length > 1 
+    credentials.displayName.length > 0
     && (/[^a-zA-Z]/).test(credentials.displayName)
-    && credentials.password.length > 7
   );
 }
 

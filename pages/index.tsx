@@ -96,11 +96,10 @@ const Home: NextPage = (): JSX.Element => {
                     fontWeight="xl"
                     fontSize="clamp(1.875rem, 1.3636rem + 2.1818vw, 3rem)"
                 >
-                    A large headlinerer about our product features & services
+                    Tracking your Holy Qur&apos;an progress has never been simpler
                 </Typography>
                 <Typography fontSize="lg" textColor="text.secondary" lineHeight="lg">
-                    A descriptive secondary text placeholder. Use it to explain your business
-                    offer better.
+                    Track the memorization/revision progress you make in the Holy Qur&apos;an easier and faster with Quran Tracker.
                 </Typography>
                 <NextLink href='/auth/signup'>
                     <Button size="lg" endDecorator={<ArrowForward />}>
